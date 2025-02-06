@@ -224,8 +224,8 @@
             let bRect = b.getBoundingClientRect();
 
             // Küçük hitbox (her seviyede aynı)
-            aRect.width = aRect.width * 0.7; // Hitbox'ı biraz küçültüyoruz
-            aRect.height = aRect.height * 0.7;
+            aRect.width = aRect.width * 0.4; // Hitbox'ı biraz küçültüyoruz
+            aRect.height = aRect.height * 0.4;
 
             return !(aRect.top > bRect.bottom || aRect.bottom < bRect.top || aRect.right < bRect.left || aRect.left > bRect.right);
         }
