@@ -57,12 +57,28 @@
             transition: transform 0.5s ease-out;
             display: none;
         }
+        #seviyeSecim {
+            margin-top: 50px;
+        }
+        #seviyeSecim button {
+            font-size: 20px;
+            padding: 10px 20px;
+            margin: 10px;
+        }
     </style>
 </head>
 <body>
 
     <h1>Babaannene Tır Çarpmadan Kaç</h1>
     <p id="puan">Puan: 0</p>
+
+    <div id="seviyeSecim">
+        <h2>Zorluk Seçin</h2>
+        <button onclick="setSeviye('kolay')">Kolay</button>
+        <button onclick="setSeviye('normal')">Normal</button>
+        <button onclick="setSeviye('zor')">Zor</button>
+    </div>
+
     <div id="oyunAlani">
         <img id="babaanne" src="images__7_-removebg-preview.png" alt="Babaanne">
         <img id="tokat" src="tokat.png" alt="Tokat">
@@ -83,20 +99,30 @@
 
         let puan = 0;
         let tirHizi = 5;
-        let seviyeler = {kolay: 3, normal: 5, zor: 7}; // Hız seviyeleri
-        let seviye = 'kolay';
-        let hitboxKucuk = true; // Hitbox her zaman küçük olacak
+        let seviyeler = {kolay: 3, normal: 5, zor: 8}; // Hız seviyeleri
+        let seviye = '';
+        let hitboxKucuk = true;
         let hareketEdiyor = false;
         let durmaSuresi = 0;
         let dokunmaBaslangicX = 0;
         let babaanneX = 0;
         let dikenler = [];
 
-        // Seviye değiştirme fonksiyonu
+        // Zorluk seviyesini ayarlama
         function setSeviye(yeniSeviye) {
             seviye = yeniSeviye;
             tirHizi = seviyeler[seviye];
+            puan = 0;
+            puanGosterge.innerText = "Puan: " + puan;
             clearDikenler();
+            document.getElementById('seviyeSecim').style.display = 'none';
+            oyunBaslat();
+        }
+
+        // Oyunu başlat
+        function oyunBaslat() {
+            setInterval(tirOlustur, 1500);
+            setInterval(ekleDiken, 2000); // Zor seviyesinde dikenler
         }
 
         // Dikenleri ekleme fonksiyonu
@@ -223,8 +249,6 @@
         }
 
         setInterval(tokatAt, 100);
-        setInterval(tirOlustur, 1500);
-        setInterval(ekleDiken, 2000); // Zor seviyesinde dikenler
     </script>
 </body>
 </html>
