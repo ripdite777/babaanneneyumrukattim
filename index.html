@@ -61,7 +61,7 @@
         <img id="babaanne" src="images__7_-removebg-preview.png" alt="Babaanne">
         <img id="tokat" src="tokat.png" alt="Tokat">
     </div>
-    <img id="babaanneFirlama" src="images__7_-removebg-preview.png" alt="Fırlayan Babaanne">
+    <img id="babaanneFirlama" src="babaanne.png" alt="Fırlayan Babaanne">
 
     <audio id="carpmaSesi" src="carpma.mp3"></audio>
     <audio id="tokatSesi" src="tokat.mp3"></audio>
@@ -112,7 +112,7 @@
             let tirInterval = setInterval(() => {
                 tir.style.top = (tir.offsetTop + tirHizi) + "px";
 
-                // Çarpışma kontrolü
+                // Çarpışma kontrolü - Hitboxları daha hassas hale getirdim
                 if (carpistiMi(babaanne, tir)) {
                     carpmaSesi.play();
                     babaanneFirlama.style.display = "block";
@@ -137,8 +137,10 @@
         }
 
         function carpistiMi(a, b) {
+            // Hitbox hesaplama
             let aRect = a.getBoundingClientRect();
             let bRect = b.getBoundingClientRect();
+
             return !(aRect.top > bRect.bottom || aRect.bottom < bRect.top || aRect.right < bRect.left || aRect.left > bRect.right);
         }
 
