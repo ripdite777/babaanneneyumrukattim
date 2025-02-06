@@ -88,6 +88,27 @@
             border-radius: 5px;
             display: none;
         }
+
+        /* Dokunmatik butonlar */
+        .control-buttons {
+            position: fixed;
+            bottom: 50px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .control-buttons button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -120,6 +141,11 @@
 
     <div id="alert"></div>
 
+    <div class="control-buttons">
+        <button id="solButton" onclick="hareket('sol')">←</button>
+        <button id="sagButton" onclick="hareket('sag')">→</button>
+    </div>
+
     <script>
         let can, tırHızı, dokunulmazlık, canHakkiGosterge, babaanne, luckyblock, alertBox;
         let carpmaSesi = new Audio('carpma.mp3'); // Ses dosyanızı buraya ekleyin
@@ -148,7 +174,7 @@
                     tırHızı = 5;
                     break;
                 case 'pratik':
-                    can = 999; // Pratik modda can hakkı yok
+                    can = 2; // Pratik modda da 2 can hakkı
                     tırHızı = 3;
                     break;
             }
@@ -245,6 +271,18 @@
             tir.remove();
         }
 
+        // Hareket fonksiyonu
+        function hareket(durum) {
+            let currentPos = babaanne.offsetLeft;
+            const step = 50; // Adım büyüklüğü
+
+            if (durum === 'sol' && currentPos > 0) {
+                babaanne.style.left = (currentPos - step) + 'px';
+            } else if (durum === 'sag' && currentPos < window.innerWidth - babaanne.offsetWidth) {
+                babaanne.style.left = (currentPos + step) + 'px';
+            }
+        }
+
         // Mobil dokunmatik kontrol ekleme
         let startX;
         babaanne.addEventListener("touchstart", function(e) {
@@ -263,35 +301,6 @@
 
             startX = currentX;
         });
-
-        // Luckyblock ödül ve cezalarını yönet
-        function luckyblockCezalariVeOdülleri() {
-            const luckyblockOdül = [
-                { tip: "puan", deger: -10 },
-                { tip: "puan", deger: 10 },
-                { tip: "puan", deger: -20 },
-                { tip: "puan", deger: 20 },
-                { tip: "puan", deger: -50 },
-                { tip: "puan", deger: 50 },
-                { tip: "puan", deger: 100 },
-                { tip: "puan", deger: -100 },
-                { tip: "puan", deger: 150 },
-                { tip: "puan", deger: -150 },
-                { tip: "puan", deger: 200 },
-            ];
-
-            luckyblock.addEventListener("click", function() {
-                const luckyblockIndex = Math.floor(Math.random() * luckyblockOdülleri.length);
-                const luckyblock = luckyblockOdülleri[luckyblockIndex];
-                if (luckyblock.tip == "puan") {
-                    alertBox.innerHTML = `Lucky Block ödülü: ${luckyblock.deger} puan`;
-                    alertBox.style.display = 'block';
-                }
-            });
-        }
-
-        luckyblockCezalariVeOdülleri();
-
     </script>
 </body>
 </html>
