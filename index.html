@@ -3,52 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Babaannene Yumruk Attım</title>
+    <title>Babaannene Tır Çarpmadan Kaç</title>
     <style>
         body {
             text-align: center;
             background-color: #f0f0f0;
+            overflow: hidden;
+            touch-action: none;
+        }
+        #oyunAlani {
+            width: 100%;
+            height: 500px;
+            background: linear-gradient(to bottom, #888, #555);
+            position: relative;
+            overflow: hidden;
+            border: 5px solid black;
         }
         #babaanne {
-            position: relative;
-            width: 200px;
-            cursor: pointer;
+            width: 80px;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             transition: transform 0.1s ease-in-out;
+        }
+        .tir {
+            width: 100px;
+            position: absolute;
+            top: -120px;
+        }
+        #puan {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        #tokat {
+            position: absolute;
+            width: 60px;
+            display: none;
+        }
+        #babaanneFirlama {
+            position: fixed;
+            width: 200px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.5s ease-out;
+            display: none;
         }
     </style>
 </head>
 <body>
 
-    <h1>Babaannene Yumruk Attım!</h1>
-    <img id="babaanne" src="images__7_-removebg-preview.png" alt="Babaanne" onclick="yumrukAt()">
-    <p id="yumrukSayisi">Yumruk Sayısı: 0</p>
+    <h1>Babaannene Tır Çarpmadan Kaç</h1>
+    <p id="puan">Puan: 0</p>
+    <div id="oyunAlani">
+        <img id="babaanne" src="babaanne.png" alt="Babaanne">
+        <img id="tokat" src="tokat.png" alt="Tokat">
+    </div>
+    <img id="babaanneFirlama" src="babaanne.png" alt="Fırlayan Babaanne">
+
+    <audio id="carpmaSesi" src="carpma.mp3"></audio>
+    <audio id="tokatSesi" src="tokat.mp3"></audio>
 
     <script>
-        let yumrukSayaci = 0;
+        let oyunAlani = document.getElementById("oyunAlani");
+        let babaanne = document.getElementById("babaanne");
+        let tokat = document.getElementById("tokat");
+        let puanGosterge = document.getElementById("puan");
+        let babaanneFirlama = document.getElementById("babaanneFirlama");
+        let carpmaSesi = document.getElementById("carpmaSesi");
+        let tokatSesi = document.getElementById("tokatSesi");
 
-        function yumrukAt() {
-            let babaanne = document.getElementById("babaanne");
-            let yumrukSayisiText = document.getElementById("yumrukSayisi");
+        let puan = 0;
+        let tirHizi = 5;
+        let hareketEdiyor = false;
+        let durmaSuresi = 0;
+        let dokunmaBaslangicX = 0;
+        let babaanneX = 0;
 
-            // Rastgele sağa sola hareket
-            let randomX = (Math.random() - 0.5) * 50;
-            babaanne.style.transform = `translateX(${randomX}px)`;
+        // Mobil dokunmatik kontrol
+        oyunAlani.addEventListener("touchstart", (e) => {
+            let dokunma = e.touches[0];
+            dokunmaBaslangicX = dokunma.clientX - babaanne.offsetLeft;
+            hareketEdiyor = true;
+        });
 
-            // Yeni ses nesnesi oluştur ve çal
-            let yumrukSesi = new Audio("yumruk.mp3");
-            yumrukSesi.play();
+        oyunAlani.addEventListener("touchmove", (e) => {
+            let dokunma = e.touches[0];
+            let yeniX = dokunma.clientX - dokunmaBaslangicX;
+            yeniX = Math.max(0, Math.min(oyunAlani.clientWidth - babaanne.clientWidth, yeniX));
+            babaanne.style.left = yeniX + "px";
+            hareketEdiyor = true;
+        });
 
-            yumrukSayaci++;
+        oyunAlani.addEventListener("touchend", () => {
+            hareketEdiyor = false;
+            durmaSuresi = 0;
+        });
 
-            // Yumruk sayısını güncelle
-            yumrukSayisiText.innerText = `Yumruk Sayısı: ${yumrukSayaci}`;
+        function tirOlustur() {
+            let tir = document.createElement("img");
+            tir.src = "tir.png";
+            tir.classList.add("tir");
+            tir.style.left = Math.random() * (oyunAlani.clientWidth - 100) + "px";
+            oyunAlani.appendChild(tir);
+            
+            let tirInterval = setInterval(() => {
+                tir.style.top = (tir.offsetTop + tirHizi) + "px";
 
-            // Her 10 yumrukta bir kemik kırılma sesi çalsın
-            if (yumrukSayaci % 10 === 0) {
-                let kemikSesi = new Audio("kemik-kirilma.mp3");
-                kemikSesi.play();
+                // Çarpışma kontrolü
+                if (carpistiMi(babaanne, tir)) {
+                    carpmaSesi.play();
+                    babaanneFirlama.style.display = "block";
+                    babaanneFirlama.style.transform = "translate(-50%, -50%) scale(1.5)";
+                    setTimeout(() => {
+                        alert("Babaannene tır çarptı! Oyun bitti. Puanın: " + puan);
+                        location.reload();
+                    }, 800);
+                }
+
+                if (tir.offsetTop > oyunAlani.clientHeight) {
+                    tir.remove();
+                    clearInterval(tirInterval);
+                    puan += 10;
+                    puanGosterge.innerText = "Puan: " + puan;
+                    
+                    if (puan % 50 === 0) {
+                        tirHizi += 1;
+                    }
+                }
+            }, 30);
+        }
+
+        function carpistiMi(a, b) {
+            let aRect = a.getBoundingClientRect();
+            let bRect = b.getBoundingClientRect();
+            return !(aRect.top > bRect.bottom || aRect.bottom < bRect.top || aRect.right < bRect.left || aRect.left > bRect.right);
+        }
+
+        function tokatAt() {
+            if (!hareketEdiyor) {
+                durmaSuresi++;
+                if (durmaSuresi > 100) {
+                    tokatSesi.play();
+                    tokat.style.left = babaanne.offsetLeft + "px";
+                    tokat.style.top = (babaanne.offsetTop - 50) + "px";
+                    tokat.style.display = "block";
+
+                    setTimeout(() => {
+                        tokat.style.display = "none";
+                        babaanne.style.left = (babaanne.offsetLeft + (Math.random() < 0.5 ? -50 : 50)) + "px";
+                        durmaSuresi = 0;
+                    }, 500);
+                }
             }
         }
+
+        setInterval(tokatAt, 100);
+        setInterval(tirOlustur, 1500);
     </script>
 
 </body>
