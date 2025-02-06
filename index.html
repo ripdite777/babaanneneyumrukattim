@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Babaannene Yumruk Attım</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+        #babaanne {
+            position: relative;
+            width: 200px;
+            cursor: pointer;
+            transition: transform 0.1s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Babaannene Yumruk Attım!</h1>
+    <img id="babaanne" src="babaanne.jpg" alt="Babaanne" onclick="yumrukAt()">
+    <audio id="yumrukSesi" src="yumruk.mp3"></audio>
+
+    <script>
+        function yumrukAt() {
+            let babaanne = document.getElementById("babaanne");
+            let ses = document.getElementById("yumrukSesi");
+
+            // Rastgele sağa veya sola kaydırma
+            let randomX = (Math.random() - 0.5) * 50;
+            babaanne.style.transform = `translateX(${randomX}px)`;
+
+            // Yumruk sesini çal
+            ses.play();
+        }
+    </script>
+
+</body>
+</html>
