@@ -40,7 +40,8 @@
             position: absolute;
             width: 40px;
             height: 40px;
-            background-color: yellow;
+            background-image: url('luckyblock.png'); /* Luckyblock resmini ekledik */
+            background-size: cover;
             border-radius: 50%;
             z-index: 2;
         }
@@ -58,6 +59,14 @@
             color: white;
             font-size: 18px;
             display: none;
+        }
+        #canPng {
+            width: 20px;
+            height: 20px;
+            background-image: url('canHakki.png'); /* Can hakkı png ekledik */
+            background-size: cover;
+            display: inline-block;
+            margin: 0 5px;
         }
     </style>
 </head>
@@ -156,6 +165,7 @@
             let luckyblock = document.createElement("div");
             luckyblock.id = "luckyblock";
             luckyblock.style.left = Math.random() * (oyunAlani.clientWidth - 40) + "px";
+            luckyblock.style.top = Math.random() * (oyunAlani.clientHeight - 40) + "px";
             oyunAlani.appendChild(luckyblock);
             luckyblocklar.push(luckyblock);
 
@@ -183,12 +193,68 @@
         function luckyblockSampul() {
             let randomBonus = Math.random();
             let bonusMesaj = "";
-            if (randomBonus < 0.5) {
-                puan += 10;
-                bonusMesaj = "10 Puan Kazandınız!";
-                bonusSesi.play();
-            } else {
-                bonusMesaj = "Şansınızı kaybettiniz!";
+            let bonusTuru = Math.floor(Math.random() * 12); // 12 farklı bonus ve ceza seçeneği
+
+            switch (bonusTuru) {
+                case 0:
+                    puan += 100;
+                    bonusMesaj = "+100 Puan Kazandınız!";
+                    bonusSesi.play();
+                    break;
+                case 1:
+                    puan -= 100;
+                    bonusMesaj = "-100 Puan Kaybettiniz!";
+                    break;
+                case 2:
+                    puan += 150;
+                    bonusMesaj = "+150 Puan Kazandınız!";
+                    bonusSesi.play();
+                    break;
+                case 3:
+                    puan -= 150;
+                    bonusMesaj = "-150 Puan Kaybettiniz!";
+                    break;
+                case 4:
+                    puan += 200;
+                    bonusMesaj = "+200 Puan Kazandınız!";
+                    bonusSesi.play();
+                    break;
+                case 5:
+                    puan -= 200;
+                    bonusMesaj = "-200 Puan Kaybettiniz!";
+                    break;
+                case 6:
+                    dokunulmazlık = 5;
+                    bonusMesaj = "Dokunulmazlık: 5s!";
+                    break;
+                case 7:
+                    dokunulmazlık = 10;
+                    bonusMesaj = "Dokunulmazlık: 10s!";
+                    break;
+                case 8:
+                    dokunulmazlık = 15;
+                    bonusMesaj = "Dokunulmazlık: 15s!";
+                    break;
+                case 9:
+                    bonusMesaj = "Tırlar Yok: 5 saniye!";
+                    setTimeout(() => {
+                        luckyblockOlustur(); // Tırları yok etme süresi
+                    }, 5000);
+                    break;
+                case 10:
+                    bonusMesaj = "Tırlar Yok: 10 saniye!";
+                    setTimeout(() => {
+                        luckyblockOlustur(); // Tırları yok etme süresi
+                    }, 10000);
+                    break;
+                case 11:
+                    bonusMesaj = "Tırlar Yok: 15 saniye!";
+                    setTimeout(() => {
+                        luckyblockOlustur(); // Tırları yok etme süresi
+                    }, 15000);
+                    break;
+                default:
+                    break;
             }
 
             luckyblockBildirim.innerText = bonusMesaj;
@@ -225,30 +291,37 @@
             let tirInterval = setInterval(() => {
                 tir.style.top = tir.offsetTop + tirHizi + "px";
 
-                // Çarpma kontrolü
+                // Tır babaanneye çarptıysa
                 if (carpistiMi(babaanne, tir)) {
-                    if (!pratikModuAktif) {
-                        can--;
-                        if (can <= 0) {
-                            alertBox.innerText = "Oyun Bitti!";
-                            alertBox.style.display = "block";
-                            clearInterval(tirInterval);
+                    if (dokunulmazlık > 0) {
+                        dokunulmazlık -= 1;
+                    } else {
+                        if (can > 0) {
+                            can--;
+                            canHakkiGosterge.removeChild(canHakkiGosterge.lastChild);
                         } else {
-                            carpmaSesi.play();
+                            showAlert("Game Over!");
+                            clearInterval(tirInterval);
+                            setTimeout(() => {
+                                location.reload(); // Yeniden başlat
+                            }, 3000);
                         }
-                        canHakkiGosterge.removeChild(canHakkiGosterge.lastChild);
                     }
-                    clearInterval(tirInterval);
+                    carpmaSesi.play();
                     tir.remove();
+                    clearInterval(tirInterval);
                 }
 
-                // Tır oyundan çıkarsa
                 if (tir.offsetTop > oyunAlani.clientHeight) {
-                    clearInterval(tirInterval);
                     tir.remove();
+                    clearInterval(tirInterval);
                 }
-            }, 30);
+            }, 20);
         }
+
+        // Başlat
+        setSeviye();
     </script>
+
 </body>
 </html>
