@@ -197,11 +197,16 @@
             }
 
             function luckyblockOlustur() {
-                luckyblock.style.top = Math.random() * 100 + '%';
+                luckyblock.style.top = 0;
                 luckyblock.style.left = Math.random() * 100 + '%';
-                setTimeout(() => {
-                    luckyblock.style.display = 'none';
-                }, 3000);
+                let luckyblockSpeed = 2; // Luckyblock hızını ayarla
+                let luckyblockInterval = setInterval(() => {
+                    luckyblock.style.top = luckyblock.offsetTop + luckyblockSpeed + 'px';
+
+                    if (luckyblock.offsetTop > document.getElementById('oyunAlani').clientHeight) {
+                        clearInterval(luckyblockInterval);
+                    }
+                }, 20);
             }
 
             luckyblockInterval = setInterval(luckyblockOlustur, 5000);
@@ -240,6 +245,25 @@
             tir.remove();
         }
 
+        // Mobil dokunmatik kontrol ekleme
+        let startX;
+        babaanne.addEventListener("touchstart", function(e) {
+            startX = e.touches[0].clientX;
+        });
+
+        babaanne.addEventListener("touchmove", function(e) {
+            let currentX = e.touches[0].clientX;
+            let movement = currentX - startX;
+
+            // Babaanne'yi sağa ve sola hareket ettirme
+            let newPos = babaanne.offsetLeft + movement;
+            if (newPos > 0 && newPos < window.innerWidth - babaanne.offsetWidth) {
+                babaanne.style.left = newPos + 'px';
+            }
+
+            startX = currentX;
+        });
+
         // Luckyblock ödül ve cezalarını yönet
         function luckyblockCezalariVeOdülleri() {
             const luckyblockOdül = [
@@ -254,45 +278,20 @@
                 { tip: "puan", deger: 150 },
                 { tip: "puan", deger: -150 },
                 { tip: "puan", deger: 200 },
-                { tip: "puan", deger: -200 },
-                { tip: "dokunulmazlik", deger: 5 },
-                { tip: "dokunulmazlik", deger: 10 },
-                { tip: "dokunulmazlik", deger: 20 },
-                { tip: "tirYok", deger: 5 },
-                { tip: "tirYok", deger: 10 },
-                { tip: "tirYok", deger: 15 },
             ];
 
-            const secilenOdül = luckyblockOdül[Math.floor(Math.random() * luckyblockOdül.length)];
-
-            // Luckyblock çıktısını kullanıcıya göster
-            if (secilenOdül.tip === "puan") {
-                showAlert(`Luckyblock çıktı! ${secilenOdül.deger} puan kazandınız!`);
-                updatePuan(secilenOdül.deger);
-            } else if (secilenOdül.tip === "dokunulmazlik") {
-                dokunulmazlık += secilenOdül.deger;
-                showAlert(`Luckyblock çıktı! ${secilenOdül.deger} saniye dokunulmazlık kazandınız!`);
-            } else if (secilenOdül.tip === "tirYok") {
-                showAlert(`Luckyblock çıktı! ${secilenOdül.deger} saniye tırlar yok!`);
-                setTimeout(() => {
-                    showAlert('Tırlar geri geldi!');
-                }, secilenOdül.deger * 1000);
-            }
+            luckyblock.addEventListener("click", function() {
+                const luckyblockIndex = Math.floor(Math.random() * luckyblockOdülleri.length);
+                const luckyblock = luckyblockOdülleri[luckyblockIndex];
+                if (luckyblock.tip == "puan") {
+                    alertBox.innerHTML = `Lucky Block ödülü: ${luckyblock.deger} puan`;
+                    alertBox.style.display = 'block';
+                }
+            });
         }
 
-        // Puanı güncelle
-        function updatePuan(puan) {
-            // Burada mevcut puanınızı güncelleyin (örneğin, global bir puan değişkeni oluşturun)
-        }
+        luckyblockCezalariVeOdülleri();
 
-        // Alert mesajı göstermek
-        function showAlert(message) {
-            alertBox.innerHTML = message;
-            alertBox.style.display = 'block';
-            setTimeout(() => {
-                alertBox.style.display = 'none';
-            }, 3000);
-        }
     </script>
 </body>
 </html>
