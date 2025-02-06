@@ -21,8 +21,6 @@
 
     <h1>Babaannene Yumruk Attım!</h1>
     <img id="babaanne" src="images__7_-removebg-preview.png" alt="Babaanne" onclick="yumrukAt()">
-    <audio id="yumrukSesi" src="yumruk.mp3"></audio>
-    <audio id="kemikSesi" src="kemik-kirilma.mp3"></audio>
     <p id="yumrukSayisi">Yumruk Sayısı: 0</p>
 
     <script>
@@ -30,16 +28,16 @@
 
         function yumrukAt() {
             let babaanne = document.getElementById("babaanne");
-            let yumrukSesi = document.getElementById("yumrukSesi");
-            let kemikSesi = document.getElementById("kemikSesi");
             let yumrukSayisiText = document.getElementById("yumrukSayisi");
 
             // Rastgele sağa sola hareket
             let randomX = (Math.random() - 0.5) * 50;
             babaanne.style.transform = `translateX(${randomX}px)`;
 
-            // Yumruk sesini çal
+            // Yeni ses nesnesi oluştur ve çal
+            let yumrukSesi = new Audio("yumruk.mp3");
             yumrukSesi.play();
+
             yumrukSayaci++;
 
             // Yumruk sayısını güncelle
@@ -47,13 +45,9 @@
 
             // Her 10 yumrukta bir kemik kırılma sesi çalsın
             if (yumrukSayaci % 10 === 0) {
+                let kemikSesi = new Audio("kemik-kirilma.mp3");
                 kemikSesi.play();
             }
-        }
-    </script>
-
-</body>
-</html>
         }
     </script>
 
