@@ -7,321 +7,246 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            text-align: center;
-            padding-top: 50px;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
         }
+
         #oyunAlani {
             position: relative;
-            height: 500px;
-            background-color: #333;
-            margin: 0 auto;
-            width: 80%;
+            width: 100%;
+            height: 80%;
             border: 2px solid #000;
             overflow: hidden;
+            background-color: #fff;
         }
+
         #babaanne {
             position: absolute;
-            bottom: 20px;
+            bottom: 10px;
             left: 50%;
             transform: translateX(-50%);
             width: 50px;
-            height: 70px;
+            height: 50px;
+            background-image: url('images__7_-removebg-preview.png');
+            background-size: cover;
+            background-position: center;
         }
-        .tir {
-            position: absolute;
-            width: 100px;
-            height: 200px;
-            background-color: #FF5733;
-            left: 50%;
-            transform: translateX(-50%);
-        }
+
         #luckyblock {
             position: absolute;
             width: 40px;
             height: 40px;
-            background-image: url('luckyblock.png'); /* Luckyblock resmini ekledik */
+            background-image: url('luckyblock.png');
             background-size: cover;
             border-radius: 50%;
             z-index: 2;
         }
-        #alert {
-            display: none;
-            padding: 10px;
-            background-color: #ff0000;
-            color: white;
+
+        #canHakki {
+            display: flex;
             margin-top: 10px;
         }
-        #luckyblockBildirim {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #32CD32;
-            color: white;
-            font-size: 18px;
-            display: none;
-        }
-        #canPng {
+
+        .can-icon {
             width: 20px;
             height: 20px;
-            background-image: url('canHakki.png'); /* Can hakkı png ekledik */
+            background-image: url('canHakki.png');
             background-size: cover;
             display: inline-block;
             margin: 0 5px;
+        }
+
+        .seviye-secimi {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #alert {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
         }
     </style>
 </head>
 <body>
 
-    <h1>Babaannene Tır Çarpmadan Kaç</h1>
-    <p id="puan">Puan: 0</p>
-    <div id="can">
-        Can: <span id="canHakki"></span>
-    </div>
-    <p id="dokunulmazlik">Dokunulmazlık: 0s</p>
-
-    <div id="seviyeSecim">
+    <div class="seviye-secimi">
         <h2>Zorluk Seçin</h2>
-        <select id="seviyeSelect" onchange="setSeviye()">
-            <option value="kolay">Kolay</option>
-            <option value="normal">Normal</option>
-            <option value="zor">Zor</option>
-            <option value="pratik">Pratik Modu</option>
-        </select>
+        <label>
+            <input type="radio" name="zorluk" value="kolay"> Kolay
+        </label>
+        <label>
+            <input type="radio" name="zorluk" value="normal"> Normal
+        </label>
+        <label>
+            <input type="radio" name="zorluk" value="zor"> Zor
+        </label>
+        <label>
+            <input type="radio" name="zorluk" value="pratik"> Pratik
+        </label>
+        <button onclick="setSeviye()">Başla</button>
     </div>
 
     <div id="oyunAlani">
-        <img id="babaanne" src="images__7_-removebg-preview.png" alt="Babaanne">
-        <div id="alert"></div>
+        <div id="babaanne"></div>
+        <div id="luckyblock"></div>
     </div>
 
-    <div id="luckyblockBildirim"></div>
+    <div id="can">
+        <div id="canHakki"></div>
+    </div>
 
-    <audio id="carpmaSesi" src="carpma.mp3"></audio>
-    <audio id="tokatSesi" src="tokat.mp3"></audio>
-    <audio id="bonusSesi" src="bonus.mp3"></audio>
-    
+    <div id="alert"></div>
+
     <script>
-        let oyunAlani = document.getElementById("oyunAlani");
-        let babaanne = document.getElementById("babaanne");
-        let puanGosterge = document.getElementById("puan");
-        let canHakkiGosterge = document.getElementById("canHakki");
-        let dokunulmazlikGosterge = document.getElementById("dokunulmazlik");
-        let alertBox = document.getElementById("alert");
-        let luckyblockBildirim = document.getElementById("luckyblockBildirim");
-        let carpmaSesi = document.getElementById("carpmaSesi");
-        let tokatSesi = document.getElementById("tokatSesi");
-        let bonusSesi = document.getElementById("bonusSesi");
+        let can, tırHızı, dokunulmazlık, canHakkiGosterge, babaanne, luckyblock, alertBox;
+        let carpmaSesi = new Audio('carpma.mp3'); // Ses dosyanızı buraya ekleyin
 
-        let puan = 0;
-        let can = 3;
-        let tirHizi = 5;
-        let seviyeler = {kolay: 3, normal: 2, zor: 1, pratik: 99};
-        let seviye = 'kolay';
-        let hareketEdiyor = false;
-        let dokunulmazlik = 0;
-        let luckyblocklar = [];
-        let pratikModuAktif = false;
-
-        // Zorluk seviyesini ayarlama
         function setSeviye() {
-            seviye = document.getElementById("seviyeSelect").value;
-            if (seviye === "pratik") {
-                pratikModuAktif = true;
-                can = 99;  // Sonsuz can hakkı veriyoruz
-                puan = 0;
-                canHakkiGosterge.innerHTML = '∞'; // Sonsuz can gösterimi
-                dokunulmazlık = 0;
-                dokunulmazlikGosterge.innerText = "Dokunulmazlık: 0s";
-                clearLuckyblocks();
-                oyunBaslat();
-                showAlert("Pratik Modu Başlatıldı!");
-            } else {
-                pratikModuAktif = false;
-                can = seviyeler[seviye];
-                tirHizi = seviye === "zor" ? 8 : seviye === "normal" ? 5 : 3;
-                puan = 0;
-                puanGosterge.innerText = "Puan: " + puan;
-                canHakkiGosterge.innerHTML = '';
-                for (let i = 0; i < can; i++) {
-                    let canIcon = document.createElement("div");
-                    canIcon.id = "canPng";
-                    canHakkiGosterge.appendChild(canIcon);
-                }
-                dokunulmazlık = 0;
-                dokunulmazlikGosterge.innerText = "Dokunulmazlık: 0s";
-                clearLuckyblocks();
-                oyunBaslat();
-            }
-        }
+            const seviye = document.querySelector('input[name="zorluk"]:checked').value;
+            if (!seviye) return alert("Lütfen bir zorluk seçin!");
 
-        // Oyunu başlat
-        function oyunBaslat() {
-            setInterval(tirOlustur, 1500);
-            setInterval(luckyblockOlustur, 5000); // Luckyblock her 5 saniyede bir
-        }
+            document.querySelector('.seviye-secimi').style.display = 'none'; // Zorluk seçimini gizle
+            canHakkiGosterge = document.getElementById('canHakki');
+            babaanne = document.getElementById('babaanne');
+            luckyblock = document.getElementById('luckyblock');
+            alertBox = document.getElementById('alert');
 
-        // Luckyblock oluştur
-        function luckyblockOlustur() {
-            let luckyblock = document.createElement("div");
-            luckyblock.id = "luckyblock";
-            luckyblock.style.left = Math.random() * (oyunAlani.clientWidth - 40) + "px";
-            luckyblock.style.top = Math.random() * (oyunAlani.clientHeight - 40) + "px";
-            oyunAlani.appendChild(luckyblock);
-            luckyblocklar.push(luckyblock);
-
-            let luckyblockInterval = setInterval(() => {
-                luckyblock.style.top = luckyblock.offsetTop + 3 + "px";
-
-                // Luckyblock'a dokunma
-                if (carpistiMi(babaanne, luckyblock)) {
-                    luckyblock.remove();
-                    clearInterval(luckyblockInterval);
-                    luckyblocklar = luckyblocklar.filter(block => block !== luckyblock);
-                    luckyblockSampul();
-                }
-
-                // Luckyblock oyundan çıkarsa
-                if (luckyblock.offsetTop > oyunAlani.clientHeight) {
-                    luckyblock.remove();
-                    clearInterval(luckyblockInterval);
-                    luckyblocklar = luckyblocklar.filter(block => block !== luckyblock);
-                }
-            }, 20);
-        }
-
-        // Luckyblock bonus
-        function luckyblockSampul() {
-            let randomBonus = Math.random();
-            let bonusMesaj = "";
-            let bonusTuru = Math.floor(Math.random() * 12); // 12 farklı bonus ve ceza seçeneği
-
-            switch (bonusTuru) {
-                case 0:
-                    puan += 100;
-                    bonusMesaj = "+100 Puan Kazandınız!";
-                    bonusSesi.play();
+            switch (seviye) {
+                case 'kolay':
+                    can = 3;
+                    tırHızı = 3;
                     break;
-                case 1:
-                    puan -= 100;
-                    bonusMesaj = "-100 Puan Kaybettiniz!";
+                case 'normal':
+                    can = 2;
+                    tırHızı = 4;
                     break;
-                case 2:
-                    puan += 150;
-                    bonusMesaj = "+150 Puan Kazandınız!";
-                    bonusSesi.play();
+                case 'zor':
+                    can = 1;
+                    tırHızı = 5;
                     break;
-                case 3:
-                    puan -= 150;
-                    bonusMesaj = "-150 Puan Kaybettiniz!";
-                    break;
-                case 4:
-                    puan += 200;
-                    bonusMesaj = "+200 Puan Kazandınız!";
-                    bonusSesi.play();
-                    break;
-                case 5:
-                    puan -= 200;
-                    bonusMesaj = "-200 Puan Kaybettiniz!";
-                    break;
-                case 6:
-                    dokunulmazlık = 5;
-                    bonusMesaj = "Dokunulmazlık: 5s!";
-                    break;
-                case 7:
-                    dokunulmazlık = 10;
-                    bonusMesaj = "Dokunulmazlık: 10s!";
-                    break;
-                case 8:
-                    dokunulmazlık = 15;
-                    bonusMesaj = "Dokunulmazlık: 15s!";
-                    break;
-                case 9:
-                    bonusMesaj = "Tırlar Yok: 5 saniye!";
-                    setTimeout(() => {
-                        luckyblockOlustur(); // Tırları yok etme süresi
-                    }, 5000);
-                    break;
-                case 10:
-                    bonusMesaj = "Tırlar Yok: 10 saniye!";
-                    setTimeout(() => {
-                        luckyblockOlustur(); // Tırları yok etme süresi
-                    }, 10000);
-                    break;
-                case 11:
-                    bonusMesaj = "Tırlar Yok: 15 saniye!";
-                    setTimeout(() => {
-                        luckyblockOlustur(); // Tırları yok etme süresi
-                    }, 15000);
-                    break;
-                default:
+                case 'pratik':
+                    can = 999; // Pratik modda can hakkı yok
+                    tırHızı = 3;
                     break;
             }
+            dokunulmazlık = 0;
 
-            luckyblockBildirim.innerText = bonusMesaj;
-            luckyblockBildirim.style.display = "block";
-            setTimeout(() => {
-                luckyblockBildirim.style.display = "none";
-            }, 2000);
+            // Can hakkını göster
+            canHakkiGosterge.innerHTML = ''; // Temizle
+            for (let i = 0; i < can; i++) {
+                const canHakkiIcon = document.createElement("div");
+                canHakkiIcon.className = "can-icon";
+                canHakkiIcon.style.backgroundImage = "url('canHakki.png')";
+                canHakkiGosterge.appendChild(canHakkiIcon);
+            }
+
+            // Oyun başlat
+            startGame();
         }
 
-        // Çarpma kontrolü
-        function carpistiMi(babaanne, obje) {
-            let bRect = babaanne.getBoundingClientRect();
-            let oRect = obje.getBoundingClientRect();
+        function startGame() {
+            let tirlar = [];
+            let tirInterval;
+            let luckyblockInterval;
 
-            return !(bRect.right < oRect.left || bRect.left > oRect.right || bRect.bottom < oRect.top || bRect.top > oRect.bottom);
-        }
+            function tırlarYerleştir() {
+                setInterval(() => {
+                    const tir = document.createElement('div');
+                    tir.classList.add('tir');
+                    tir.style.top = "-100px";
+                    tir.style.left = Math.random() * 100 + '%';
+                    document.body.appendChild(tir);
 
-        // Uyarı gösterme
-        function showAlert(message) {
-            alertBox.innerText = message;
-            alertBox.style.display = "block";
-            setTimeout(() => {
-                alertBox.style.display = "none";
-            }, 2000);
-        }
+                    let tirHızı = tırHızı;
 
-        // Araba oluştur
-        function tirOlustur() {
-            let tir = document.createElement("div");
-            tir.className = "tir";
-            tir.style.left = Math.random() * (oyunAlani.clientWidth - 100) + "px";
-            oyunAlani.appendChild(tir);
-
-            let tirInterval = setInterval(() => {
-                tir.style.top = tir.offsetTop + tirHizi + "px";
-
-                // Tır babaanneye çarptıysa
-                if (carpistiMi(babaanne, tir)) {
-                    if (dokunulmazlık > 0) {
-                        dokunulmazlık -= 1;
-                    } else {
-                        if (can > 0) {
-                            can--;
-                            canHakkiGosterge.removeChild(canHakkiGosterge.lastChild);
-                        } else {
-                            showAlert("Game Over!");
-                            clearInterval(tirInterval);
-                            setTimeout(() => {
-                                location.reload(); // Yeniden başlat
-                            }, 3000);
+                    let tirInterval = setInterval(() => {
+                        tir.style.top = tir.offsetTop + tirHızı + "px";
+                        if (carpistiMi(babaanne, tir)) {
+                            handleCarpma(tir);
                         }
-                    }
-                    carpmaSesi.play();
-                    tir.remove();
-                    clearInterval(tirInterval);
-                }
 
-                if (tir.offsetTop > oyunAlani.clientHeight) {
-                    tir.remove();
-                    clearInterval(tirInterval);
-                }
-            }, 20);
+                        if (tir.offsetTop > document.getElementById('oyunAlani').clientHeight) {
+                            tir.remove();
+                            clearInterval(tirInterval);
+                        }
+                    }, 20);
+                }, 1000);
+            }
+
+            function luckyblockOlustur() {
+                luckyblock.style.top = Math.random() * 100 + '%';
+                luckyblock.style.left = Math.random() * 100 + '%';
+                setTimeout(() => {
+                    luckyblock.style.display = 'none';
+                }, 3000);
+            }
+
+            luckyblockInterval = setInterval(luckyblockOlustur, 5000);
+            tırlarYerleştir();
         }
 
-        // Başlat
-        setSeviye();
-    </script>
+        function carpistiMi(babaanne, tir) {
+            const babaanneRect = babaanne.getBoundingClientRect();
+            const tirRect = tir.getBoundingClientRect();
 
+            return !(
+                babaanneRect.right < tirRect.left ||
+                babaanneRect.left > tirRect.right ||
+                babaanneRect.bottom < tirRect.top ||
+                babaanneRect.top > tirRect.bottom
+            );
+        }
+
+        function handleCarpma(tir) {
+            if (dokunulmazlık > 0) {
+                dokunulmazlık--;
+            } else if (can > 0 && document.querySelector('input[name="zorluk"]:checked').value !== 'pratik') {
+                // Pratik modunda ölme durumu yok
+                if (can > 0) {
+                    can--;
+                    canHakkiGosterge.removeChild(canHakkiGosterge.lastChild);
+                } else {
+                    alertBox.innerHTML = "Game Over!";
+                    alertBox.style.display = 'block';
+                    setTimeout(() => {
+                        location.reload(); // Yeniden başlat
+                    }, 3000);
+                }
+            }
+            carpmaSesi.play();
+            tir.remove();
+        }
+
+        function showAlert(message) {
+            alertBox.innerHTML = message;
+            alertBox.style.display = 'block';
+            setTimeout(() => {
+                alertBox.style.display = 'none';
+            }, 2000);
+        }
+    </script>
 </body>
 </html>
