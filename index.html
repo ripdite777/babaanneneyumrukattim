@@ -32,6 +32,12 @@
             position: absolute;
             top: -120px;
         }
+        .diken {
+            width: 30px;
+            height: 30px;
+            position: absolute;
+            top: -50px;
+        }
         #puan {
             font-size: 24px;
             font-weight: bold;
@@ -77,10 +83,60 @@
 
         let puan = 0;
         let tirHizi = 5;
+        let seviyeler = {kolay: 3, normal: 5, zor: 7}; // Hız seviyeleri
+        let seviye = 'kolay';
+        let hitboxKucuk = true; // Hitbox her zaman küçük olacak
         let hareketEdiyor = false;
         let durmaSuresi = 0;
         let dokunmaBaslangicX = 0;
         let babaanneX = 0;
+        let dikenler = [];
+
+        // Seviye değiştirme fonksiyonu
+        function setSeviye(yeniSeviye) {
+            seviye = yeniSeviye;
+            tirHizi = seviyeler[seviye];
+            clearDikenler();
+        }
+
+        // Dikenleri ekleme fonksiyonu
+        function ekleDiken() {
+            if (seviye === 'zor') {
+                let diken = document.createElement("img");
+                diken.src = "diken.png"; // Bu dosyayı eklemelisiniz
+                diken.classList.add("diken");
+                diken.style.left = Math.random() * (oyunAlani.clientWidth - 30) + "px";
+                oyunAlani.appendChild(diken);
+                dikenler.push(diken);
+
+                let dikenInterval = setInterval(() => {
+                    diken.style.top = (diken.offsetTop + tirHizi) + "px";
+
+                    if (carpistiMi(babaanne, diken)) {
+                        carpmaSesi.play();
+                        babaanneFirlama.style.display = "block";
+                        babaanneFirlama.style.transform = "translate(-50%, -50%) scale(1.5)";
+                        setTimeout(() => {
+                            alert("Babaannene dikenlere çarptı! Oyun bitti. Puanın: " + puan);
+                            location.reload();
+                        }, 800);
+                    }
+
+                    if (diken.offsetTop > oyunAlani.clientHeight) {
+                        diken.remove();
+                        clearInterval(dikenInterval);
+                    }
+                }, 30);
+            }
+        }
+
+        // Dikenleri temizle
+        function clearDikenler() {
+            dikenler.forEach(diken => {
+                diken.remove();
+            });
+            dikenler = [];
+        }
 
         // Mobil dokunmatik kontrol
         oyunAlani.addEventListener("touchstart", (e) => {
@@ -112,11 +168,11 @@
             let tirInterval = setInterval(() => {
                 tir.style.top = (tir.offsetTop + tirHizi) + "px";
 
-                // Çarpışma kontrolü - Hitboxları daha hassas hale getirdim
+                // Çarpışma kontrolü - Hitbox'ları küçük tutuyoruz
                 if (carpistiMi(babaanne, tir)) {
                     carpmaSesi.play();
                     babaanneFirlama.style.display = "block";
-                    babaanneFirlama.style.transform = "translate(-25%, -25%) scale(0.5)";
+                    babaanneFirlama.style.transform = "translate(-50%, -50%) scale(1.5)";
                     setTimeout(() => {
                         alert("Babaannene tır çarptı! Oyun bitti. Puanın: " + puan);
                         location.reload();
@@ -137,9 +193,13 @@
         }
 
         function carpistiMi(a, b) {
-            // Hitbox hesaplama
+            // Hitbox hesaplama - Küçük hitbox tutma
             let aRect = a.getBoundingClientRect();
             let bRect = b.getBoundingClientRect();
+
+            // Küçük hitbox (her seviyede aynı)
+            aRect.width = aRect.width * 0.7; // Hitbox'ı biraz küçültüyoruz
+            aRect.height = aRect.height * 0.7;
 
             return !(aRect.top > bRect.bottom || aRect.bottom < bRect.top || aRect.right < bRect.left || aRect.left > bRect.right);
         }
@@ -164,7 +224,7 @@
 
         setInterval(tokatAt, 100);
         setInterval(tirOlustur, 1500);
+        setInterval(ekleDiken, 2000); // Zor seviyesinde dikenler
     </script>
-
 </body>
 </html>
