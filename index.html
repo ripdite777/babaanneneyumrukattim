@@ -6,64 +6,58 @@
     <title>Babaannene Tır Çarpmadan Kaç</title>
     <style>
         body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
             text-align: center;
-            background-color: #f0f0f0;
-            overflow: hidden;
-            touch-action: none;
+            padding-top: 50px;
         }
         #oyunAlani {
-            width: 100%;
-            height: 500px;
-            background: linear-gradient(to bottom, #888, #555);
             position: relative;
+            height: 500px;
+            background-color: #333;
+            margin: 0 auto;
+            width: 80%;
+            border: 2px solid #000;
             overflow: hidden;
-            border: 5px solid black;
         }
         #babaanne {
-            width: 80px;
             position: absolute;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            transition: transform 0.1s ease-in-out;
+            width: 50px;
+            height: 70px;
         }
         .tir {
+            position: absolute;
             width: 100px;
-            position: absolute;
-            top: -120px;
+            height: 200px;
+            background-color: #FF5733;
+            left: 50%;
+            transform: translateX(-50%);
         }
-        .diken {
-            width: 30px;
-            height: 30px;
+        #luckyblock {
             position: absolute;
-            top: -50px;
+            width: 40px;
+            height: 40px;
+            background-color: yellow;
+            border-radius: 50%;
+            z-index: 2;
         }
-        #puan {
-            font-size: 24px;
-            font-weight: bold;
+        #alert {
+            display: none;
+            padding: 10px;
+            background-color: #ff0000;
+            color: white;
             margin-top: 10px;
         }
-        #tokat {
-            position: absolute;
-            width: 60px;
+        #luckyblockBildirim {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #32CD32;
+            color: white;
+            font-size: 18px;
             display: none;
-        }
-        #babaanneFirlama {
-            position: fixed;
-            width: 200px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            transition: transform 0.5s ease-out;
-            display: none;
-        }
-        #seviyeSecim {
-            margin-top: 50px;
-        }
-        #seviyeSecim button {
-            font-size: 20px;
-            padding: 10px 20px;
-            margin: 10px;
         }
     </style>
 </head>
@@ -71,184 +65,190 @@
 
     <h1>Babaannene Tır Çarpmadan Kaç</h1>
     <p id="puan">Puan: 0</p>
+    <div id="can">
+        Can: <span id="canHakki"></span>
+    </div>
+    <p id="dokunulmazlik">Dokunulmazlık: 0s</p>
 
     <div id="seviyeSecim">
         <h2>Zorluk Seçin</h2>
-        <button onclick="setSeviye('kolay')">Kolay</button>
-        <button onclick="setSeviye('normal')">Normal</button>
-        <button onclick="setSeviye('zor')">Zor</button>
+        <select id="seviyeSelect" onchange="setSeviye()">
+            <option value="kolay">Kolay</option>
+            <option value="normal">Normal</option>
+            <option value="zor">Zor</option>
+            <option value="pratik">Pratik Modu</option>
+        </select>
     </div>
 
     <div id="oyunAlani">
         <img id="babaanne" src="images__7_-removebg-preview.png" alt="Babaanne">
-        <img id="tokat" src="tokat.png" alt="Tokat">
+        <div id="alert"></div>
     </div>
-    <img id="babaanneFirlama" src="babaanne.png" alt="Fırlayan Babaanne">
+
+    <div id="luckyblockBildirim"></div>
 
     <audio id="carpmaSesi" src="carpma.mp3"></audio>
     <audio id="tokatSesi" src="tokat.mp3"></audio>
-
+    <audio id="bonusSesi" src="bonus.mp3"></audio>
+    
     <script>
         let oyunAlani = document.getElementById("oyunAlani");
         let babaanne = document.getElementById("babaanne");
-        let tokat = document.getElementById("tokat");
         let puanGosterge = document.getElementById("puan");
-        let babaanneFirlama = document.getElementById("babaanneFirlama");
+        let canHakkiGosterge = document.getElementById("canHakki");
+        let dokunulmazlikGosterge = document.getElementById("dokunulmazlik");
+        let alertBox = document.getElementById("alert");
+        let luckyblockBildirim = document.getElementById("luckyblockBildirim");
         let carpmaSesi = document.getElementById("carpmaSesi");
         let tokatSesi = document.getElementById("tokatSesi");
+        let bonusSesi = document.getElementById("bonusSesi");
 
         let puan = 0;
+        let can = 3;
         let tirHizi = 5;
-        let seviyeler = {kolay: 3, normal: 5, zor: 8}; // Hız seviyeleri
-        let seviye = '';
-        let hitboxKucuk = true;
+        let seviyeler = {kolay: 3, normal: 2, zor: 1, pratik: 99};
+        let seviye = 'kolay';
         let hareketEdiyor = false;
-        let durmaSuresi = 0;
-        let dokunmaBaslangicX = 0;
-        let babaanneX = 0;
-        let dikenler = [];
+        let dokunulmazlik = 0;
+        let luckyblocklar = [];
+        let pratikModuAktif = false;
 
         // Zorluk seviyesini ayarlama
-        function setSeviye(yeniSeviye) {
-            seviye = yeniSeviye;
-            tirHizi = seviyeler[seviye];
-            puan = 0;
-            puanGosterge.innerText = "Puan: " + puan;
-            clearDikenler();
-            document.getElementById('seviyeSecim').style.display = 'none';
-            oyunBaslat();
+        function setSeviye() {
+            seviye = document.getElementById("seviyeSelect").value;
+            if (seviye === "pratik") {
+                pratikModuAktif = true;
+                can = 99;  // Sonsuz can hakkı veriyoruz
+                puan = 0;
+                canHakkiGosterge.innerHTML = '∞'; // Sonsuz can gösterimi
+                dokunulmazlık = 0;
+                dokunulmazlikGosterge.innerText = "Dokunulmazlık: 0s";
+                clearLuckyblocks();
+                oyunBaslat();
+                showAlert("Pratik Modu Başlatıldı!");
+            } else {
+                pratikModuAktif = false;
+                can = seviyeler[seviye];
+                tirHizi = seviye === "zor" ? 8 : seviye === "normal" ? 5 : 3;
+                puan = 0;
+                puanGosterge.innerText = "Puan: " + puan;
+                canHakkiGosterge.innerHTML = '';
+                for (let i = 0; i < can; i++) {
+                    let canIcon = document.createElement("div");
+                    canIcon.id = "canPng";
+                    canHakkiGosterge.appendChild(canIcon);
+                }
+                dokunulmazlık = 0;
+                dokunulmazlikGosterge.innerText = "Dokunulmazlık: 0s";
+                clearLuckyblocks();
+                oyunBaslat();
+            }
         }
 
         // Oyunu başlat
         function oyunBaslat() {
             setInterval(tirOlustur, 1500);
-            setInterval(ekleDiken, 2000); // Zor seviyesinde dikenler
+            setInterval(luckyblockOlustur, 5000); // Luckyblock her 5 saniyede bir
         }
 
-        // Dikenleri ekleme fonksiyonu
-        function ekleDiken() {
-            if (seviye === 'zor') {
-                let diken = document.createElement("img");
-                diken.src = "diken.png"; // Bu dosyayı eklemelisiniz
-                diken.classList.add("diken");
-                diken.style.left = Math.random() * (oyunAlani.clientWidth - 30) + "px";
-                oyunAlani.appendChild(diken);
-                dikenler.push(diken);
+        // Luckyblock oluştur
+        function luckyblockOlustur() {
+            let luckyblock = document.createElement("div");
+            luckyblock.id = "luckyblock";
+            luckyblock.style.left = Math.random() * (oyunAlani.clientWidth - 40) + "px";
+            oyunAlani.appendChild(luckyblock);
+            luckyblocklar.push(luckyblock);
 
-                let dikenInterval = setInterval(() => {
-                    diken.style.top = (diken.offsetTop + tirHizi) + "px";
+            let luckyblockInterval = setInterval(() => {
+                luckyblock.style.top = luckyblock.offsetTop + 3 + "px";
 
-                    if (carpistiMi(babaanne, diken)) {
-                        carpmaSesi.play();
-                        babaanneFirlama.style.display = "block";
-                        babaanneFirlama.style.transform = "translate(-50%, -50%) scale(1.5)";
-                        setTimeout(() => {
-                            alert("Babaannene dikenlere çarptı! Oyun bitti. Puanın: " + puan);
-                            location.reload();
-                        }, 800);
-                    }
-
-                    if (diken.offsetTop > oyunAlani.clientHeight) {
-                        diken.remove();
-                        clearInterval(dikenInterval);
-                    }
-                }, 30);
-            }
-        }
-
-        // Dikenleri temizle
-        function clearDikenler() {
-            dikenler.forEach(diken => {
-                diken.remove();
-            });
-            dikenler = [];
-        }
-
-        // Mobil dokunmatik kontrol
-        oyunAlani.addEventListener("touchstart", (e) => {
-            let dokunma = e.touches[0];
-            dokunmaBaslangicX = dokunma.clientX - babaanne.offsetLeft;
-            hareketEdiyor = true;
-        });
-
-        oyunAlani.addEventListener("touchmove", (e) => {
-            let dokunma = e.touches[0];
-            let yeniX = dokunma.clientX - dokunmaBaslangicX;
-            yeniX = Math.max(0, Math.min(oyunAlani.clientWidth - babaanne.clientWidth, yeniX));
-            babaanne.style.left = yeniX + "px";
-            hareketEdiyor = true;
-        });
-
-        oyunAlani.addEventListener("touchend", () => {
-            hareketEdiyor = false;
-            durmaSuresi = 0;
-        });
-
-        function tirOlustur() {
-            let tir = document.createElement("img");
-            tir.src = "tir.png";
-            tir.classList.add("tir");
-            tir.style.left = Math.random() * (oyunAlani.clientWidth - 100) + "px";
-            oyunAlani.appendChild(tir);
-            
-            let tirInterval = setInterval(() => {
-                tir.style.top = (tir.offsetTop + tirHizi) + "px";
-
-                // Çarpışma kontrolü - Hitbox'ları küçük tutuyoruz
-                if (carpistiMi(babaanne, tir)) {
-                    carpmaSesi.play();
-                    babaanneFirlama.style.display = "block";
-                    babaanneFirlama.style.transform = "translate(-50%, -50%) scale(1.5)";
-                    setTimeout(() => {
-                        alert("Babaannene tır çarptı! Oyun bitti. Puanın: " + puan);
-                        location.reload();
-                    }, 800);
+                // Luckyblock'a dokunma
+                if (carpistiMi(babaanne, luckyblock)) {
+                    luckyblock.remove();
+                    clearInterval(luckyblockInterval);
+                    luckyblocklar = luckyblocklar.filter(block => block !== luckyblock);
+                    luckyblockSampul();
                 }
 
-                if (tir.offsetTop > oyunAlani.clientHeight) {
-                    tir.remove();
-                    clearInterval(tirInterval);
-                    puan += 10;
-                    puanGosterge.innerText = "Puan: " + puan;
-                    
-                    if (puan % 50 === 0) {
-                        tirHizi += 1;
+                // Luckyblock oyundan çıkarsa
+                if (luckyblock.offsetTop > oyunAlani.clientHeight) {
+                    luckyblock.remove();
+                    clearInterval(luckyblockInterval);
+                    luckyblocklar = luckyblocklar.filter(block => block !== luckyblock);
+                }
+            }, 20);
+        }
+
+        // Luckyblock bonus
+        function luckyblockSampul() {
+            let randomBonus = Math.random();
+            let bonusMesaj = "";
+            if (randomBonus < 0.5) {
+                puan += 10;
+                bonusMesaj = "10 Puan Kazandınız!";
+                bonusSesi.play();
+            } else {
+                bonusMesaj = "Şansınızı kaybettiniz!";
+            }
+
+            luckyblockBildirim.innerText = bonusMesaj;
+            luckyblockBildirim.style.display = "block";
+            setTimeout(() => {
+                luckyblockBildirim.style.display = "none";
+            }, 2000);
+        }
+
+        // Çarpma kontrolü
+        function carpistiMi(babaanne, obje) {
+            let bRect = babaanne.getBoundingClientRect();
+            let oRect = obje.getBoundingClientRect();
+
+            return !(bRect.right < oRect.left || bRect.left > oRect.right || bRect.bottom < oRect.top || bRect.top > oRect.bottom);
+        }
+
+        // Uyarı gösterme
+        function showAlert(message) {
+            alertBox.innerText = message;
+            alertBox.style.display = "block";
+            setTimeout(() => {
+                alertBox.style.display = "none";
+            }, 2000);
+        }
+
+        // Araba oluştur
+        function tirOlustur() {
+            let tir = document.createElement("div");
+            tir.className = "tir";
+            tir.style.left = Math.random() * (oyunAlani.clientWidth - 100) + "px";
+            oyunAlani.appendChild(tir);
+
+            let tirInterval = setInterval(() => {
+                tir.style.top = tir.offsetTop + tirHizi + "px";
+
+                // Çarpma kontrolü
+                if (carpistiMi(babaanne, tir)) {
+                    if (!pratikModuAktif) {
+                        can--;
+                        if (can <= 0) {
+                            alertBox.innerText = "Oyun Bitti!";
+                            alertBox.style.display = "block";
+                            clearInterval(tirInterval);
+                        } else {
+                            carpmaSesi.play();
+                        }
+                        canHakkiGosterge.removeChild(canHakkiGosterge.lastChild);
                     }
+                    clearInterval(tirInterval);
+                    tir.remove();
+                }
+
+                // Tır oyundan çıkarsa
+                if (tir.offsetTop > oyunAlani.clientHeight) {
+                    clearInterval(tirInterval);
+                    tir.remove();
                 }
             }, 30);
         }
-
-        function carpistiMi(a, b) {
-            // Hitbox hesaplama - Küçük hitbox tutma
-            let aRect = a.getBoundingClientRect();
-            let bRect = b.getBoundingClientRect();
-
-            // Küçük hitbox (her seviyede aynı)
-            aRect.width = aRect.width * 0.25; // Hitbox'ı biraz küçültüyoruz
-            aRect.height = aRect.height * 0.25;
-
-            return !(aRect.top > bRect.bottom || aRect.bottom < bRect.top || aRect.right < bRect.left || aRect.left > bRect.right);
-        }
-
-        function tokatAt() {
-            if (!hareketEdiyor) {
-                durmaSuresi++;
-                if (durmaSuresi > 100) {
-                    tokatSesi.play();
-                    tokat.style.left = babaanne.offsetLeft + "px";
-                    tokat.style.top = (babaanne.offsetTop - 50) + "px";
-                    tokat.style.display = "block";
-
-                    setTimeout(() => {
-                        tokat.style.display = "none";
-                        babaanne.style.left = (babaanne.offsetLeft + (Math.random() < 0.5 ? -50 : 50)) + "px";
-                        durmaSuresi = 0;
-                    }, 500);
-                }
-            }
-        }
-
-        setInterval(tokatAt, 100);
     </script>
 </body>
 </html>
