@@ -6,102 +6,59 @@
     <title>Babaannene Tır Çarpmadan Kaç</title>
     <style>
         body {
-            background-color: #f0f0f0;
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
+            background-color: #f0f0f0;
             overflow: hidden;
+            touch-action: none;
         }
-
-        /* Phone container */
-        #phone {
-            width: 375px;
-            height: 667px;
-            background: #fff;
+        #telefon {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 250px;
+            height: 500px;
+            background-color: #fff;
             border-radius: 30px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 10;
         }
-
-        /* Phone screen */
-        #phoneScreen {
-            width: 100%;
-            height: 80%;
+        #kilitEkrani {
             background-color: #333;
-            position: relative;
-        }
-
-        /* Phone home button */
-        #homeButton {
-            width: 60px;
-            height: 10px;
-            background-color: #ddd;
-            border-radius: 15px;
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        /* Control buttons */
-        #playButton, #pauseButton {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #4CAF50;
-            padding: 10px;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             color: white;
+            padding: 0 10px;
+        }
+        #kilitEkrani span {
             font-size: 16px;
+        }
+        #telefonEkrani {
+            display: none;
+            padding: 20px;
+            height: 100%;
+            overflow-y: auto;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            margin: 5px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
         }
-
-        #pauseButton {
-            background: #f44336;
-        }
-
-        /* Phone applications area */
-        #apps {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 10px;
-        }
-
-        .appIcon {
-            width: 40px;
-            height: 40px;
-            background-color: #888;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
         #oyunAlani {
             width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
+            height: 500px;
             background: linear-gradient(to bottom, #888, #555);
+            position: relative;
             overflow: hidden;
             border: 5px solid black;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
         }
-
         #babaanne {
             width: 80px;
             position: absolute;
@@ -110,25 +67,16 @@
             transform: translateX(-50%);
             transition: transform 0.1s ease-in-out;
         }
-
         .tir {
             width: 100px;
             position: absolute;
             top: -120px;
         }
-
         #puan {
             font-size: 24px;
             font-weight: bold;
             margin-top: 10px;
         }
-
-        #tokat {
-            position: absolute;
-            width: 60px;
-            display: none;
-        }
-
         #babaanneFirlama {
             position: fixed;
             width: 200px;
@@ -138,165 +86,140 @@
             transition: transform 0.5s ease-out;
             display: none;
         }
-
-        /* Music controls */
-        #musicControl {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        #musicPlay {
-            padding: 5px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-
-        #musicStop {
-            padding: 5px;
-            cursor: pointer;
-            background-color: #f44336;
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-
     </style>
 </head>
 <body>
 
-    <div id="phone">
-        <div id="phoneScreen">
-            <div id="oyunAlani">
-                <img id="babaanne" src="images__7_-removebg-preview.png" alt="Babaanne">
-                <img id="tokat" src="tokat.png" alt="Tokat">
-            </div>
-            <img id="babaanneFirlama" src="babaanne.png" alt="Fırlayan Babaanne">
-            <p id="puan">Puan: 0</p>
-        </div>
-
-        <div id="homeButton"></div>
-
-        <!-- Music control buttons -->
-        <div id="musicControl">
-            <button id="musicPlay">Play Music</button>
-            <button id="musicStop">Stop Music</button>
-        </div>
-
-        <!-- Game control buttons -->
-        <button id="playButton">Play</button>
-        <button id="pauseButton">Pause</button>
-
-        <!-- Apps section -->
-        <div id="apps">
-            <div class="appIcon" id="app1">📱</div>
-            <div class="appIcon" id="app2">📷</div>
-            <div class="appIcon" id="app3">🎵</div>
-        </div>
+    <h1>Babaannene Tır Çarpmadan Kaç</h1>
+    <p id="puan">Puan: 0</p>
+    <div id="oyunAlani">
+        <img id="babaanne" src="images__7_-removebg-preview.png" alt="Babaanne">
     </div>
+    <img id="babaanneFirlama" src="babaanne.png" alt="Fırlayan Babaanne">
 
     <audio id="carpmaSesi" src="carpma.mp3"></audio>
     <audio id="tokatSesi" src="tokat.mp3"></audio>
-    <audio id="musicAudio" src="mortals.mp3"></audio>
+
+    <div id="telefon">
+        <div id="kilitEkrani">
+            <span id="saat">12:00:00</span>
+            <button id="kilitAcilButton" class="btn">Aç</button>
+        </div>
+        <div id="telefonEkrani">
+            <button id="noClipButton" class="btn">NoClip</button>
+            <button id="hizlandirButton" class="btn">Hızlandır</button>
+            <button id="yavaslatButton" class="btn">Yavaşlat</button>
+            <button id="hitboxButton" class="btn">HitBox: 0.1</button>
+        </div>
+    </div>
 
     <script>
-        let oyunAlani = document.getElementById("oyunAlani");
-        let babaanne = document.getElementById("babaanne");
-        let tokat = document.getElementById("tokat");
-        let puanGosterge = document.getElementById("puan");
-        let babaanneFirlama = document.getElementById("babaanneFirlama");
-        let carpmaSesi = document.getElementById("carpmaSesi");
-        let tokatSesi = document.getElementById("tokatSesi");
-        let musicAudio = document.getElementById("musicAudio");
+        let telefon = document.getElementById("telefon");
+        let kilitAcilButton = document.getElementById("kilitAcilButton");
+        let telefonEkrani = document.getElementById("telefonEkrani");
+        let noClipButton = document.getElementById("noClipButton");
+        let hizlandirButton = document.getElementById("hizlandirButton");
+        let yavaslatButton = document.getElementById("yavaslatButton");
+        let hitboxButton = document.getElementById("hitboxButton");
+        let saat = document.getElementById("saat");
 
         let puan = 0;
         let tirHizi = 5;
         let hareketEdiyor = false;
         let durmaSuresi = 0;
         let dokunmaBaslangicX = 0;
+        let babaanneX = 0;
+        let noClip = false;
+        let hitbox = 0.1;
 
-        oyunAlani.addEventListener("touchstart", (e) => {
+        // Kilit ekranını açma
+        kilitAcilButton.addEventListener("click", function() {
+            telefon.style.display = "block";
+            telefonEkrani.style.display = "block";
+            document.getElementById("kilitEkrani").style.display = "none";
+            setInterval(updateSaat, 1000);
+        });
+
+        // Saat güncellemesi
+        function updateSaat() {
+            let currentTime = new Date();
+            let saatStr = currentTime.getHours().toString().padStart(2, "0") + ":" +
+                          currentTime.getMinutes().toString().padStart(2, "0") + ":" +
+                          currentTime.getSeconds().toString().padStart(2, "0");
+            let tarihStr = currentTime.getDate() + "/" + (currentTime.getMonth() + 1) + "/" + currentTime.getFullYear();
+            saat.innerText = `${saatStr} - ${tarihStr}`;
+        }
+
+        // NoClip etkinleştirme
+        noClipButton.addEventListener("click", function() {
+            noClip = !noClip;
+            noClipButton.innerText = noClip ? "NoClip: Aktif" : "NoClip";
+            if (noClip) {
+                alert("NoClip modu aktif! Yüksel ve alçal!");
+            }
+        });
+
+        // Hızlandırma ve Yavaşlatma
+        hizlandirButton.addEventListener("click", function() {
+            tirHizi += 2;
+            alert("Hızlandırma aktif. Tır hızı arttı!");
+        });
+
+        yavaslatButton.addEventListener("click", function() {
+            if (tirHizi > 2) {
+                tirHizi -= 2;
+                alert("Yavaşlatma aktif. Tır hızı azaldı.");
+            }
+        });
+
+        // Hitbox Ayarı
+        hitboxButton.addEventListener("click", function() {
+            hitbox = (hitbox < 1) ? (hitbox + 0.1) : 1;
+            hitboxButton.innerText = "HitBox: " + hitbox;
+        });
+
+        // Mobil dokunmatik kontrol
+        document.getElementById("oyunAlani").addEventListener("touchstart", (e) => {
             let dokunma = e.touches[0];
-            dokunmaBaslangicX = dokunma.clientX - babaanne.offsetLeft;
+            dokunmaBaslangicX = dokunma.clientX - document.getElementById("babaanne").offsetLeft;
             hareketEdiyor = true;
         });
 
-        oyunAlani.addEventListener("touchmove", (e) => {
+        document.getElementById("oyunAlani").addEventListener("touchmove", (e) => {
             let dokunma = e.touches[0];
             let yeniX = dokunma.clientX - dokunmaBaslangicX;
-            yeniX = Math.max(0, Math.min(oyunAlani.clientWidth - babaanne.clientWidth, yeniX));
-            babaanne.style.left = yeniX + "px";
+            if (noClip) {
+                // Yukarı ve aşağıda hareket etme
+                let yeniY = dokunma.clientY;
+                document.getElementById("babaanne").style.left = yeniX + "px";
+                document.getElementById("babaanne").style.top = yeniY + "px";
+            } else {
+                yeniX = Math.max(0, Math.min(document.getElementById("oyunAlani").clientWidth - document.getElementById("babaanne").clientWidth, yeniX));
+                document.getElementById("babaanne").style.left = yeniX + "px";
+            }
             hareketEdiyor = true;
         });
 
-        oyunAlani.addEventListener("touchend", () => {
-            hareketEdiyor = false;
-        });
-
+        // Tır oluşturma ve çarpışma kontrolü
         function tirOlustur() {
             let tir = document.createElement("img");
             tir.src = "tir.png";
             tir.classList.add("tir");
-            tir.style.left = Math.random() * (oyunAlani.clientWidth - 100) + "px";
-            oyunAlani.appendChild(tir);
+            tir.style.left = Math.random() * (document.getElementById("oyunAlani").clientWidth - 100) + "px";
+            document.getElementById("oyunAlani").appendChild(tir);
             
             let tirInterval = setInterval(() => {
                 tir.style.top = (tir.offsetTop + tirHizi) + "px";
-
-                if (carpistiMi(babaanne, tir)) {
-                    carpmaSesi.play();
-                    babaanneFirlama.style.display = "block";
-                    babaanneFirlama.style.transform = "translate(-50%, -50%) scale(1.5)";
-                    setTimeout(() => {
-                        alert("Babaannene tır çarptı! Oyun bitti. Puanın: " + puan);
-                        location.reload();
-                    }, 800);
-                }
-
-                if (tir.offsetTop > oyunAlani.clientHeight) {
+                if (tir.offsetTop > document.getElementById("oyunAlani").clientHeight) {
                     tir.remove();
                     clearInterval(tirInterval);
                     puan += 10;
-                    puanGosterge.innerText = "Puan: " + puan;
-                    
-                    if (puan % 50 === 0) {
-                        tirHizi += 1;
-                    }
+                    document.getElementById("puan").innerText = "Puan: " + puan;
                 }
             }, 30);
         }
 
-        function carpistiMi(a, b) {
-            let aRect = a.getBoundingClientRect();
-            let bRect = b.getBoundingClientRect();
-
-            return !(aRect.top > bRect.bottom || aRect.bottom < bRect.top || aRect.right < bRect.left || aRect.left > bRect.right);
-        }
-
         setInterval(tirOlustur, 1500);
-
-        // Music control
-        document.getElementById("musicPlay").onclick = function() {
-            musicAudio.play();
-        };
-
-        document.getElementById("musicStop").onclick = function() {
-            musicAudio.pause();
-        };
-
-        // Pause and Play the game
-        document.getElementById("playButton").onclick = function() {
-            // Resume game
-        };
-
-        document.getElementById("pauseButton").onclick = function() {
-            // Pause game logic
-        };
     </script>
 
 </body>
