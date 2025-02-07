@@ -1,54 +1,296 @@
 <!DOCTYPE html>
 <html lang="tr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Babaannene Tır Çarpmadan Kaç</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            text-align: center;
+            background-color: #f0f0f0;
+            overflow: hidden;
+            touch-action: none;
+            font-family: Arial, sans-serif;
+        }
+
+        #oyunAlani {
+            width: 100%;
+            height: 500px;
+            background: linear-gradient(to bottom, #888, #555);
+            position: relative;
+            overflow: hidden;
+            border: 5px solid black;
+        }
+
+        #babaanne {
+            width: 80px;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .tir {
+            width: 100px;
+            position: absolute;
+            top: -120px;
+        }
+
+        .luckyBlock {
+            width: 40px;
+            position: absolute;
+            top: -50px;
+        }
+
+        #telefon {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            width: 60px;
+            height: 60px;
+            background-color: black;
+            color: white;
+            text-align: center;
+            line-height: 60px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        #telefonEkrani {
+            display: none;
+            position: fixed;
+            width: 320px;
+            height: 570px;
+            background-color: white;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 16px solid black;
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+        }
+
+        #telefonEkrani h2 {
+            text-align: center;
+        }
+
+        button {
+            width: 100%;
+            margin: 5px 0;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #dokunulmazlikYazisi {
+            display: none;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            font-weight: bold;
+            color: red;
+        }
+
+        #kodEkrani {
+            display: none;
+            text-align: center;
+        }
+
+        #kodInput {
+            margin: 10px;
+            padding: 5px;
+            font-size: 16px;
+        }
+
+        /* Telefon Wallpaper ve tema stili */
+        #telefonEkrani {
+            background-image: url('default-wallpaper.jpg'); /* Varsayılan wallpaper */
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
 </head>
-
 <body>
-    <h1>Babaannene Tır Çarpmadan Kaç</h1>
-    <p id="puan">Puan: 0</p>
-    <div id="canlar">
-        <img src="canHakki.png" alt="Can">
-        <img src="canHakki.png" alt="Can">
-    </div>
-    <p id="dokunulmazlikUyari">DOKUNULMAZSIN!</p>
 
-    <div id="seviyeSecim">
-        <h2>Zorluk Seçin</h2>
-        <button onclick="setSeviye('kolay')">Kolay</button>
-        <button onclick="setSeviye('normal')">Normal</button>
-        <button onclick="setSeviye('zor')">Zor</button>
-    </div>
+<h1>Babaannene Tır Çarpmadan Kaç</h1>
+<p id="puan">Puan: 0</p>
+<div id="oyunAlani">
+    <img id="babaanne" src="babaanne.png" alt="Babaanne">
+    <p id="dokunulmazlikYazisi">Dokunulmazsın!</p>
+</div>
 
-    <div id="oyunAlani">
-        <img id="babaanne" src="images__7_-removebg-preview.png" alt="Babaanne">
-        <img id="tokat" src="tokat.png" alt="Tokat">
-    </div>
-    <img id="babaanneFirlama" src="babaanne.png" alt="Fırlayan Babaanne">
+<!-- Telefon ikonu -->
+<div id="telefon">📱</div>
 
-    <div id="oyunBitti">
-        <p>Oyun Bitti!</p>
-        <p id="sonPuan">Puan: 0</p>
-        <button onclick="location.reload()">Tekrar Oyna</button>
-    </div>
+<!-- Telefon Ekranı -->
+<div id="telefonEkrani">
+    <h2>Telefon Menüsü</h2>
+    <button onclick="setSeviye('kolay')">Kolay</button>
+    <button onclick="setSeviye('normal')">Normal</button>
+    <button onclick="setSeviye('zor')">Zor</button>
+    <button onclick="restartGame()">Restart</button>
+    <button onclick="toggleYouTube()">YouTube Radyo</button>
+    <button onclick="showKodEkrani()">Gizli Kod Girişi</button>
+    <button onclick="window.open('https://github.com/ripdite777')">GitHub’a Yükle</button>
+    <button onclick="openSettings()">Ayarlar</button>
+</div>
 
-    <audio id="carpmaSesi" src="carpma.mp3"></audio>
-    <audio id="tokatSesi" src="tokat.mp3"></audio>
-    <audio id="bonusSesi" src="bonus.mp3"></audio>
+<!-- Gizli Kod Girişi -->
+<div id="kodEkrani">
+    <h2>Gizli Kod Gir</h2>
+    <input type="text" id="kodInput">
+    <button onclick="kodGir()">Kod Kullan</button>
+</div>
 
-    <script src="script.js"></script>
+<!-- Ayarlar Ekranı -->
+<div id="ayarlarEkrani" style="display:none;">
+    <h2>Ayarlar</h2>
+    <button onclick="changeWallpaper()">Wallpaper Değiştir</button>
+    <button onclick="changeTheme()">Tema Değiştir</button>
+    <button onclick="closeSettings()">Kapat</button>
+</div>
+
+<script>
+    let puan = 0;
+    let dokunulmazlik = false;
+    let seviye = '';
+    let babaanne = document.getElementById("babaanne");
+    let puanGosterge = document.getElementById("puan");
+    let oyunAlani = document.getElementById("oyunAlani");
+    let dokunulmazlikYazisi = document.getElementById("dokunulmazlikYazisi");
+
+    document.getElementById("telefon").addEventListener("click", () => {
+        document.getElementById("telefonEkrani").style.display = "block";
+    });
+
+    function setSeviye(yeniSeviye) {
+        seviye = yeniSeviye;
+        document.getElementById("telefonEkrani").style.display = "none";
+        puan = 0;
+        puanGosterge.innerText = "Puan: " + puan;
+        oyunBaslat();
+    }
+
+    function oyunBaslat() {
+        setInterval(tirOlustur, 1500);
+        setInterval(luckyBlockOlustur, 12000);
+    }
+
+    function tirOlustur() {
+        let tir = document.createElement("img");
+        tir.src = "tir.png";
+        tir.classList.add("tir");
+        tir.style.left = Math.random() * (oyunAlani.clientWidth - 100) + "px";
+        oyunAlani.appendChild(tir);
+        let tirInterval = setInterval(() => {
+            tir.style.top = (tir.offsetTop + 5) + "px";
+            if (carpistiMi(babaanne, tir) && !dokunulmazlik) {
+                alert("Babaannene tır çarptı! Oyun bitti. Puanın: " + puan);
+                location.reload();
+            }
+            if (tir.offsetTop > oyunAlani.clientHeight) {
+                tir.remove();
+                clearInterval(tirInterval);
+                puan += 10;
+                puanGosterge.innerText = "Puan: " + puan;
+            }
+        }, 30);
+    }
+
+    function luckyBlockOlustur() {
+        let lb = document.createElement("img");
+        lb.src = "luckyblock.png";
+        lb.classList.add("luckyBlock");
+        lb.style.left = Math.random() * (oyunAlani.clientWidth - 40) + "px";
+        oyunAlani.appendChild(lb);
+        let lbInterval = setInterval(() => {
+            lb.style.top = (lb.offsetTop + 3) + "px";
+            if (carpistiMi(babaanne, lb)) {
+                let efektler = [50, -50, 0, 100, 200, -100, -150, -200, "dokunulmazlik"];
+                let sonuc = efektler[Math.floor(Math.random() * efektler.length)];
+                if (sonuc === "dokunulmazlik") {
+                    dokunulmazlik = true;
+                    dokunulmazlikYazisi.style.display = "block";
+                    setTimeout(() => {
+                        dokunulmazlik = false;
+                        dokunulmazlikYazisi.style.display = "none";
+                    }, 10000);
+                } else {
+                    puan += sonuc;
+                    puanGosterge.innerText = "Puan: " + puan;
+                }
+                lb.remove();
+            }
+            if (lb.offsetTop > oyunAlani.clientHeight) {
+                lb.remove();
+                clearInterval(lbInterval);
+            }
+        }, 30);
+    }
+
+    function carpistiMi(a, b) {
+        let aRect = a.getBoundingClientRect();
+        let bRect = b.getBoundingClientRect();
+        return !(aRect.top > bRect.bottom || aRect.bottom < bRect.top || aRect.right < bRect.left || aRect.left > bRect.right);
+    }
+
+    function kodGir() {
+        let kod = document.getElementById("kodInput").value;
+        if (kod === "OLUMSUZ100") {
+            dokunulmazlik = true;
+            dokunulmazlikYazisi.style.display = "block";
+            setTimeout(() => {
+                dokunulmazlik = false;
+                dokunulmazlikYazisi.style.display = "none";
+            }, 100000);
+        }
+        alert("Kod kullanıldı!");
+    }
+
+    function restartGame() {
+        location.reload();
+    }
+
+    function toggleYouTube() {
+        window.open("https://www.youtube.com", "_self");
+    }
+
+    function showKodEkrani() {
+        document.getElementById("kodEkrani").style.display = "block";
+    }
+
+    function openSettings() {
+        document.getElementById("ayarlarEkrani").style.display = "block";
+    }
+
+    function closeSettings() {
+        document.getElementById("ayarlarEkrani").style.display = "none";
+    }
+
+    function changeWallpaper() {
+        let wallpaper = prompt("Yeni wallpaper URL'sini girin:");
+        if (wallpaper) {
+            document.getElementById("telefonEkrani").style.backgroundImage = "url('" + wallpaper + "')";
+        }
+    }
+
+    function changeTheme() {
+        document.body.style.backgroundColor = "#2C3E50";
+        document.body.style.color = "#ECF0F1";
+    }
+</script>
+
 </body>
-
-</html>
-    <audio id="carpmaSesi" src="carpma.mp3"></audio>
-    <audio id="tokatSesi" src="tokat.mp3"></audio>
-    <audio id="bonusSesi" src="bonus.mp3"></audio>
-
-    <script src="script.js"></script>
-</body>
-
 </html>
