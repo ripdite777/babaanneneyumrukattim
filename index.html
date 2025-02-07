@@ -1,313 +1,308 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Babaannene Tır Çarpmadan Kaç</title>
-<style>
-body {
-    text-align: center;
-    background-color: #f0f0f0;
-    overflow: hidden;
-    touch-action: none;
-}
-#oyunAlani {
-    width: 100%;
-    height: 500px;
-    background: linear-gradient(to bottom, #888, #555);
-    position: relative;
-    overflow: hidden;
-    border: 5px solid black;
-}
-#babaanne {
-    width: 80px;
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-.tir {
-    width: 100px;
-    position: absolute;
-    top: -120px;
-}
-.luckyBlock {
-    width: 40px;
-    position: absolute;
-    top: -50px;
-}
-#telefon {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    width: 50px;
-    height: 90px;
-    background-color: black;
-    color: white;
-    text-align: center;
-    line-height: 90px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 30px;
-    z-index: 100;
-}
-#telefonEkrani {
-    display: none;
-    position: fixed;
-    width: 300px;
-    height: 500px;
-    background-color: white;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 2px solid black;
-    padding: 10px;
-    z-index: 1000;
-}
-button {
-    width: 100%;
-    margin: 5px 0;
-    padding: 10px;
-    font-size: 16px;
-}
-#dokunulmazlikYazisi {
-    display: none;
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 20px;
-    font-weight: bold;
-    color: red;
-}
-#kapatButton {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 20px;
-    cursor: pointer;
-}
-#pauseButton {
-    position: absolute;
-    top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 20px;
-    background-color: black;
-    color: white;
-    padding: 10px;
-    cursor: pointer;
-}
-.kategori {
-    margin-bottom: 20px;
-}
-.kategori h3 {
-    font-size: 20px;
-    margin-bottom: 10px;
-}
-#bildirimPaneli {
-    position: fixed;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #ffcc00;
-    padding: 10px;
-    border-radius: 5px;
-    font-size: 18px;
-    display: none;
-    z-index: 150;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Babaannene Tır Çarpmadan Kaç</title>
+    <style>
+        /* Genel Stil */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            position: relative;
+        }
+
+        #gameContainer {
+            text-align: center;
+            position: relative;
+        }
+
+        #gameArea {
+            margin-bottom: 150px;
+        }
+
+        /* Telefon Simülasyonu */
+        #phone {
+            width: 300px;
+            height: 600px;
+            border-radius: 25px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        #phoneHeader {
+            background-color: #f1f1f1;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            position: relative;
+        }
+
+        #togglePhoneButton {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        #phoneContent {
+            padding: 10px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Uygulama Pencereleri */
+        .appWindow {
+            display: none;
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 250px;
+            margin: 10px;
+        }
+
+        .appWindow.active {
+            display: block;
+        }
+
+        /* Müzik Çalma */
+        audio {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        /* Ayarlar Penceresi */
+        #settingsWindow {
+            display: none;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 101;
+        }
+
+        .closeButton {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #f44336;
+            border: none;
+            color: white;
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        .closeButton:hover {
+            background-color: #f12d29;
+        }
+
+        /* Dark Tema */
+        .dark-theme {
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        /* Bildirim Alanı */
+        #notificationArea {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            z-index: 101;
+            animation: fadeIn 0.5s ease-in-out, fadeOut 2s 3s ease-in-out;
+        }
+
+        /* Bildirim Animasyonları */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+    </style>
 </head>
 <body>
+    <div id="gameContainer">
+        <h1>Babaannene Tır Çarpmadan Kaç</h1>
+        <div id="gameArea">
+            <!-- Oyun alanı burada olacak -->
+        </div>
 
-<h1>Babaannene Tır Çarpmadan Kaç</h1>
-<p id="puan">Puan: 0</p>
-<div id="oyunAlani">
-    <img id="babaanne" src="images__7_-removebg-preview.png" alt="Babaanne">
-    <p id="dokunulmazlikYazisi">Dokunulmazsın!</p>
-</div>
+        <!-- Telefon Simülasyonu -->
+        <div id="phone">
+            <div id="phoneHeader">
+                <span>Telefon Ayarları</span>
+                <span id="togglePhoneButton">🔽</span>
+            </div>
+            <div id="phoneContent">
+                <button id="appMusicButton">Müzik Uygulaması</button>
+                <button id="appSettingsButton">Ayarlar</button>
+                <button id="changeThemeButton">Tema Değiştir</button>
+                <button id="backButton">Geri</button>
+            </div>
+        </div>
 
-<div id="telefon">📱</div>
-<div id="telefonEkrani">
-    <div id="kapatButton" onclick="kapatTelefon()">❌</div>
-    <h2>Telefon Menüsü</h2>
-    
-    <div class="kategori">
-        <h3>Oyun Ayarları</h3>
-        <button onclick="showOyunAyarlar()">Ayarları Göster</button>
+        <!-- Müzik Uygulaması Penceresi -->
+        <div id="musicAppWindow" class="appWindow">
+            <button class="closeButton" onclick="closeWindow('musicAppWindow')">X</button>
+            <h3>Müzik Uygulaması</h3>
+            <audio id="musicPlayer" controls>
+                <source src="mortals.mp3" type="audio/mp3">
+                Tarayıcınız ses dosyasını desteklemiyor.
+            </audio>
+            <button id="playPauseMusic">Oynat</button>
+        </div>
+
+        <!-- Ayarlar Penceresi -->
+        <div id="settingsWindow">
+            <button class="closeButton" onclick="closeWindow('settingsWindow')">X</button>
+            <h3>Ayarlar</h3>
+            <button id="brightnessButton">Parlaklık</button>
+            <button id="soundButton">Ses</button>
+            <button id="vibrationButton">Vibrasyon</button>
+            <button id="themeButton">Tema</button>
+        </div>
+
+        <!-- Bildirim Alanı -->
+        <div id="notificationArea">
+            <p id="notificationText"></p>
+        </div>
     </div>
-    
-    <div class="kategori">
-        <h3>Diğer Ayarlar</h3>
-        <button onclick="pauseGame()">Oyun Duraklat</button>
-        <button onclick="restartGame()">Yeniden Başlat</button>
-        <button onclick="hizlandir()">Hızlandır</button>
-        <button onclick="yavaslat()">Yavaşlat</button>
-    </div>
-</div>
 
-<div id="ayarlarEkrani">
-    <h2>Oyun Ayarları</h2>
-    <button onclick="setSeviye('kolay')">Kolay</button>
-    <button onclick="setSeviye('normal')">Normal</button>
-    <button onclick="setSeviye('zor')">Zor</button>
-</div>
+    <script>
+        // Telefonu göster/gizle
+        let isPhoneVisible = true;
+        const phoneElement = document.getElementById('phone');
+        const togglePhoneButton = document.getElementById('togglePhoneButton');
 
-<div id="bildirimPaneli"></div>
+        togglePhoneButton.addEventListener('click', () => {
+            isPhoneVisible = !isPhoneVisible;
+            phoneElement.style.display = isPhoneVisible ? 'block' : 'none';
+        });
 
-<script>
-let puan = 0;
-let dokunulmazlik = false;
-let seviye = 'kolay'; // Oyun başlangıcında duraklatılmış ve kolay seviyesinde
-let hitbox = 0.1;
-let noclip = false;
-let oyunDuraklat = true;
-let babaanne = document.getElementById("babaanne");
-let puanGosterge = document.getElementById("puan");
-let oyunAlani = document.getElementById("oyunAlani");
-let dokunulmazlikYazisi = document.getElementById("dokunulmazlikYazisi");
-let bildirimPaneli = document.getElementById("bildirimPaneli");
+        // Müzik Uygulaması
+        const musicPlayer = document.getElementById('musicPlayer');
+        const playPauseButton = document.getElementById('playPauseMusic');
+        let isMusicPlaying = false;
 
-// Telefonu açma ve kapama fonksiyonu
-let telefonAcik = false;
-
-document.getElementById("telefon").addEventListener("click", () => {
-    if (!telefonAcik) {
-        telefonAcik = true;
-        document.getElementById("telefonEkrani").style.display = "block";
-        document.getElementById("telefon").style.width = "50px";
-        document.getElementById("telefon").style.height = "90px";
-    } else {
-        telefonAcik = false;
-        document.getElementById("telefonEkrani").style.display = "none";
-        document.getElementById("telefon").style.width = "50px";
-        document.getElementById("telefon").style.height = "90px";
-    }
-});
-
-// Oyun Ayarlarını Gösterme
-function showOyunAyarlar() {
-    document.getElementById("telefonEkrani").style.display = "none";
-    document.getElementById("ayarlarEkrani").style.display = "block";
-}
-
-// Zorluk Seçimi
-function setSeviye(yeniSeviye) {
-    seviye = yeniSeviye;
-    document.getElementById("ayarlarEkrani").style.display = "none";
-    puan = 0;
-    puanGosterge.innerText = "Puan: " + puan;
-    oyunBaslat();
-    bildirimGoster("Zorluk seviyesi: " + yeniSeviye);
-}
-
-// Oyun Başlatma
-function oyunBaslat() {
-    if (!oyunDuraklat) {
-        setInterval(tirOlustur, 1500);
-        setInterval(luckyBlockOlustur, 12000);
-    }
-}
-
-// Oyun Duraklatma
-function pauseGame() {
-    oyunDuraklat = !oyunDuraklat;
-    if (oyunDuraklat) {
-        bildirimGoster("Oyun Duraklatıldı!");
-    } else {
-        bildirimGoster("Oyun Başlatıldı!");
-        oyunBaslat();
-    }
-}
-
-// Hızlandırma
-function hizlandir() {
-    setInterval(tirOlustur, 1000); // Speed up game
-}
-
-// Yavaşlatma
-function yavaslat() {
-    setInterval(tirOlustur, 3000); // Slow down game
-}
-
-// Bildirim Gösterme
-function bildirimGoster(mesaj) {
-    bildirimPaneli.style.display = "block";
-    bildirimPaneli.innerText = mesaj;
-    setTimeout(() => {
-        bildirimPaneli.style.display = "none";
-    }, 2000);
-}
-
-// Tır Oluşturma
-function tirOlustur() {
-    let tir = document.createElement("img");
-    tir.src = "tir.png";
-    tir.classList.add("tir");
-    tir.style.left = Math.random() * (oyunAlani.clientWidth - 100) + "px";
-    oyunAlani.appendChild(tir);
-    let tirInterval = setInterval(() => {
-        tir.style.top = (tir.offsetTop + (1 + puan / 100)) + "px"; // Speed increases with score
-        if (carpistiMi(babaanne, tir) && !dokunulmazlik) {
-            alert("Babaannene tır çarptı! Oyun bitti. Puanın: " + puan);
-            location.reload();
-        }
-        if (tir.offsetTop > oyunAlani.clientHeight) {
-            tir.remove();
-            clearInterval(tirInterval);
-            puan += 10;
-            puanGosterge.innerText = "Puan: " + puan;
-        }
-    }, 30);
-}
-
-// Lucky Block Oluşturma
-function luckyBlockOlustur() {
-    let lb = document.createElement("img");
-    lb.src = "luckyblock.png";
-    lb.classList.add("luckyBlock");
-    lb.style.left = Math.random() * (oyunAlani.clientWidth - 40) + "px";
-    oyunAlani.appendChild(lb);
-    let lbInterval = setInterval(() => {
-        lb.style.top = (lb.offsetTop + (1 + puan / 100)) + "px"; // Speed increases with score
-        if (carpistiMi(babaanne, lb)) {
-            let efektler = [50, -50, 0, 100, 200, -100, -150, -200, "dokunulmazlik"];
-            let sonuc = efektler[Math.floor(Math.random() * efektler.length)];
-            if (sonuc === "dokunulmazlik") {
-                dokunulmazlik = true;
-                dokunulmazlikYazisi.style.display = "block";
-                setTimeout(() => {
-                    dokunulmazlık = false;
-                    dokunulmazlikYazisi.style.display = "none";
-                }, 10000);
+        playPauseButton.addEventListener('click', function() {
+            if (isMusicPlaying) {
+                musicPlayer.pause();
+                playPauseButton.textContent = 'Oynat';
             } else {
-                puan += sonuc;
-                puanGosterge.innerText = "Puan: " + puan;
+                musicPlayer.play();
+                playPauseButton.textContent = 'Duraklat';
             }
-            lb.remove();
-            document.getElementById("bonusSound").play(); // Bonus sound play
+            isMusicPlaying = !isMusicPlaying;
+        });
+
+        // Uygulama açma
+        document.getElementById("appMusicButton").addEventListener("click", function() {
+            openWindow('musicAppWindow');
+        });
+
+        document.getElementById("appSettingsButton").addEventListener("click", function() {
+            openWindow('settingsWindow');
+        });
+
+        // Ayarlar Penceresi
+        document.getElementById("brightnessButton").addEventListener("click", function() {
+            alert("Parlaklık ayarı yapılabilir.");
+        });
+
+        document.getElementById("soundButton").addEventListener("click", function() {
+            alert("Ses ayarları yapılabilir.");
+        });
+
+        document.getElementById("vibrationButton").addEventListener("click", function() {
+            alert("Vibrasyon ayarları yapılabilir.");
+        });
+
+        document.getElementById("themeButton").addEventListener("click", function() {
+            document.body.classList.toggle('dark-theme');
+            alert("Tema değiştirildi.");
+        });
+
+        // Ayarları açmak
+        function openWindow(windowId) {
+            const windowElement = document.getElementById(windowId);
+            windowElement.classList.add('active');
         }
-        if (lb.offsetTop > oyunAlani.clientHeight) {
-            lb.remove();
-            clearInterval(lbInterval);
+
+        // Pencereyi kapatmak
+        function closeWindow(windowId) {
+            const windowElement = document.getElementById(windowId);
+            windowElement.classList.remove('active');
         }
-    }, 30);
-}
 
-// Çarpışma Kontrolü
-function carpistiMi(a, b) {
-    let aRect = a.getBoundingClientRect();
-    let bRect = b.getBoundingClientRect();
-    return !(aRect.top > bRect.bottom || aRect.bottom < bRect.top || aRect.right < bRect.left || aRect.left > bRect.right);
-}
+        // Geri butonu
+        document.getElementById("backButton").addEventListener("click", function() {
+            window.history.back();
+        });
 
-// Telefonu Kapatma
-function kapatTelefon() {
-    document.getElementById("telefonEkrani").style.display = "none";
-}
+        // Bildirim gösterme
+        function showNotification(message) {
+            const notificationArea = document.getElementById('notificationArea');
+            const notificationText = document.getElementById('notificationText');
+            notificationText.textContent = message;
+            notificationArea.style.display = 'block';
+            setTimeout(() => {
+                notificationArea.style.display = 'none';
+            }, 5000); // Bildirim 5 saniye sonra kaybolur
+        }
 
-</script>
-
+        // Bildirim örneği
+        showNotification("LuckyBlock aldın! Puan kazandın.");
+    </script>
 </body>
 </html>
