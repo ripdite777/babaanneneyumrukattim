@@ -1,295 +1,312 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Babaannene Tır Çarpmadan Kaç</title>
-    <style>
-        body {
-            text-align: center;
-            background-color: #f0f0f0;
-            overflow: hidden;
-            touch-action: none;
-            font-family: Arial, sans-serif;
-        }
-
-        #oyunAlani {
-            width: 100%;
-            height: 500px;
-            background: linear-gradient(to bottom, #888, #555);
-            position: relative;
-            overflow: hidden;
-            border: 5px solid black;
-        }
-
-        #babaanne {
-            width: 80px;
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .tir {
-            width: 100px;
-            position: absolute;
-            top: -120px;
-        }
-
-        .luckyBlock {
-            width: 40px;
-            position: absolute;
-            top: -50px;
-        }
-
-        #telefon {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            width: 60px;
-            height: 60px;
-            background-color: black;
-            color: white;
-            text-align: center;
-            line-height: 60px;
-            border-radius: 10px;
-            cursor: pointer;
-        }
-
-        #telefonEkrani {
-            display: none;
-            position: fixed;
-            width: 320px;
-            height: 570px;
-            background-color: white;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border: 16px solid black;
-            border-radius: 30px;
-            padding: 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            z-index: 100;
-        }
-
-        #telefonEkrani h2 {
-            text-align: center;
-        }
-
-        button {
-            width: 100%;
-            margin: 5px 0;
-            padding: 10px;
-            font-size: 16px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        #dokunulmazlikYazisi {
-            display: none;
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 20px;
-            font-weight: bold;
-            color: red;
-        }
-
-        #kodEkrani {
-            display: none;
-            text-align: center;
-        }
-
-        #kodInput {
-            margin: 10px;
-            padding: 5px;
-            font-size: 16px;
-        }
-
-        /* Telefon Wallpaper ve tema stili */
-        #telefonEkrani {
-            background-image: url('images.jpeg'); /* Varsayılan wallpaper */
-            background-size: cover;
-            background-position: center;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Babaannene Tır Çarpmadan Kaç</title>
+<style>
+body {
+    text-align: center;
+    background-color: #f0f0f0;
+    overflow: hidden;
+    touch-action: none;
+}
+#oyunAlani {
+    width: 100%;
+    height: 500px;
+    background: linear-gradient(to bottom, #888, #555);
+    position: relative;
+    overflow: hidden;
+    border: 5px solid black;
+}
+#babaanne {
+    width: 80px;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.tir {
+    width: 100px;
+    position: absolute;
+    top: -120px;
+}
+.luckyBlock {
+    width: 40px;
+    position: absolute;
+    top: -50px;
+}
+#telefon {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: 50px;
+    height: 90px;
+    background-color: black;
+    color: white;
+    text-align: center;
+    line-height: 90px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 30px;
+    z-index: 100;
+}
+#telefonEkrani {
+    display: none;
+    position: fixed;
+    width: 300px;
+    height: 500px;
+    background-color: white;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 2px solid black;
+    padding: 10px;
+    z-index: 1000;
+}
+button {
+    width: 100%;
+    margin: 5px 0;
+    padding: 10px;
+    font-size: 16px;
+}
+#dokunulmazlikYazisi {
+    display: none;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 20px;
+    font-weight: bold;
+    color: red;
+}
+#kapatButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+#pauseButton {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 20px;
+    background-color: black;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+}
+.kategori {
+    margin-bottom: 20px;
+}
+.kategori h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+#bildirimPaneli {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ffcc00;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 18px;
+    display: none;
+    z-index: 150;
+}
+</style>
 </head>
 <body>
 
 <h1>Babaannene Tır Çarpmadan Kaç</h1>
 <p id="puan">Puan: 0</p>
 <div id="oyunAlani">
-    <img id="babaanne" src="babaanne.png" alt="Babaanne">
+    <img id="babaanne" src="images__7_-removebg-preview.png" alt="Babaanne">
     <p id="dokunulmazlikYazisi">Dokunulmazsın!</p>
 </div>
 
-<!-- Telefon ikonu -->
 <div id="telefon">📱</div>
-
-<!-- Telefon Ekranı -->
 <div id="telefonEkrani">
+    <div id="kapatButton" onclick="kapatTelefon()">❌</div>
     <h2>Telefon Menüsü</h2>
+    
+    <div class="kategori">
+        <h3>Oyun Ayarları</h3>
+        <button onclick="showOyunAyarlar()">Ayarları Göster</button>
+    </div>
+    
+    <div class="kategori">
+        <h3>Diğer Ayarlar</h3>
+        <button onclick="pauseGame()">Oyun Duraklat</button>
+        <button onclick="restartGame()">Yeniden Başlat</button>
+        <button onclick="hizlandir()">Hızlandır</button>
+        <button onclick="yavaslat()">Yavaşlat</button>
+    </div>
+</div>
+
+<div id="ayarlarEkrani">
+    <h2>Oyun Ayarları</h2>
     <button onclick="setSeviye('kolay')">Kolay</button>
     <button onclick="setSeviye('normal')">Normal</button>
     <button onclick="setSeviye('zor')">Zor</button>
-    <button onclick="restartGame()">Restart</button>
-    <button onclick="toggleYouTube()">YouTube Radyo</button>
-    <button onclick="showKodEkrani()">Gizli Kod Girişi</button>
-    <button onclick="window.open('https://github.com/ripdite777')">GitHub’a Yükle</button>
-    <button onclick="openSettings()">Ayarlar</button>
 </div>
 
-<!-- Gizli Kod Girişi -->
-<div id="kodEkrani">
-    <h2>Gizli Kod Gir</h2>
-    <input type="text" id="kodInput">
-    <button onclick="kodGir()">Kod Kullan</button>
-</div>
-
-<!-- Ayarlar Ekranı -->
-<div id="ayarlarEkrani" style="display:none;">
-    <h2>Ayarlar</h2>
-    <button onclick="changeWallpaper()">Wallpaper Değiştir</button>
-    <button onclick="changeTheme()">Tema Değiştir</button>
-    <button onclick="closeSettings()">Kapat</button>
-</div>
+<div id="bildirimPaneli"></div>
 
 <script>
-    let puan = 0;
-    let dokunulmazlik = false;
-    let seviye = '';
-    let babaanne = document.getElementById("babaanne");
-    let puanGosterge = document.getElementById("puan");
-    let oyunAlani = document.getElementById("oyunAlani");
-    let dokunulmazlikYazisi = document.getElementById("dokunulmazlikYazisi");
+let puan = 0;
+let dokunulmazlik = false;
+let seviye = 'kolay'; // Oyun başlangıcında duraklatılmış ve kolay seviyesinde
+let hitbox = 0.1;
+let noclip = false;
+let oyunDuraklat = true;
+let babaanne = document.getElementById("babaanne");
+let puanGosterge = document.getElementById("puan");
+let oyunAlani = document.getElementById("oyunAlani");
+let dokunulmazlikYazisi = document.getElementById("dokunulmazlikYazisi");
+let bildirimPaneli = document.getElementById("bildirimPaneli");
 
-    document.getElementById("telefon").addEventListener("click", () => {
+// Telefonu açma ve kapama fonksiyonu
+let telefonAcik = false;
+
+document.getElementById("telefon").addEventListener("click", () => {
+    if (!telefonAcik) {
+        telefonAcik = true;
         document.getElementById("telefonEkrani").style.display = "block";
-    });
-
-    function setSeviye(yeniSeviye) {
-        seviye = yeniSeviye;
+        document.getElementById("telefon").style.width = "50px";
+        document.getElementById("telefon").style.height = "90px";
+    } else {
+        telefonAcik = false;
         document.getElementById("telefonEkrani").style.display = "none";
-        puan = 0;
-        puanGosterge.innerText = "Puan: " + puan;
-        oyunBaslat();
+        document.getElementById("telefon").style.width = "50px";
+        document.getElementById("telefon").style.height = "90px";
     }
+});
 
-    function oyunBaslat() {
+// Oyun Ayarlarını Gösterme
+function showOyunAyarlar() {
+    document.getElementById("telefonEkrani").style.display = "none";
+    document.getElementById("ayarlarEkrani").style.display = "block";
+}
+
+// Zorluk Seçimi
+function setSeviye(yeniSeviye) {
+    seviye = yeniSeviye;
+    document.getElementById("ayarlarEkrani").style.display = "none";
+    puan = 0;
+    puanGosterge.innerText = "Puan: " + puan;
+    oyunBaslat();
+    bildirimGoster("Zorluk seviyesi: " + yeniSeviye);
+}
+
+// Oyun Başlatma
+function oyunBaslat() {
+    if (!oyunDuraklat) {
         setInterval(tirOlustur, 1500);
         setInterval(luckyBlockOlustur, 12000);
     }
+}
 
-    function tirOlustur() {
-        let tir = document.createElement("img");
-        tir.src = "tir.png";
-        tir.classList.add("tir");
-        tir.style.left = Math.random() * (oyunAlani.clientWidth - 100) + "px";
-        oyunAlani.appendChild(tir);
-        let tirInterval = setInterval(() => {
-            tir.style.top = (tir.offsetTop + 5) + "px";
-            if (carpistiMi(babaanne, tir) && !dokunulmazlik) {
-                alert("Babaannene tır çarptı! Oyun bitti. Puanın: " + puan);
-                location.reload();
-            }
-            if (tir.offsetTop > oyunAlani.clientHeight) {
-                tir.remove();
-                clearInterval(tirInterval);
-                puan += 10;
+// Oyun Duraklatma
+function pauseGame() {
+    oyunDuraklat = !oyunDuraklat;
+    if (oyunDuraklat) {
+        bildirimGoster("Oyun Duraklatıldı!");
+    } else {
+        bildirimGoster("Oyun Başlatıldı!");
+        oyunBaslat();
+    }
+}
+
+// Hızlandırma
+function hizlandir() {
+    setInterval(tirOlustur, 1000); // Speed up game
+}
+
+// Yavaşlatma
+function yavaslat() {
+    setInterval(tirOlustur, 3000); // Slow down game
+}
+
+// Bildirim Gösterme
+function bildirimGoster(mesaj) {
+    bildirimPaneli.style.display = "block";
+    bildirimPaneli.innerText = mesaj;
+    setTimeout(() => {
+        bildirimPaneli.style.display = "none";
+    }, 2000);
+}
+
+// Tır Oluşturma
+function tirOlustur() {
+    let tir = document.createElement("img");
+    tir.src = "tir.png";
+    tir.classList.add("tir");
+    tir.style.left = Math.random() * (oyunAlani.clientWidth - 100) + "px";
+    oyunAlani.appendChild(tir);
+    let tirInterval = setInterval(() => {
+        tir.style.top = (tir.offsetTop + (1 + puan / 100)) + "px"; // Speed increases with score
+        if (carpistiMi(babaanne, tir) && !dokunulmazlik) {
+            alert("Babaannene tır çarptı! Oyun bitti. Puanın: " + puan);
+            location.reload();
+        }
+        if (tir.offsetTop > oyunAlani.clientHeight) {
+            tir.remove();
+            clearInterval(tirInterval);
+            puan += 10;
+            puanGosterge.innerText = "Puan: " + puan;
+        }
+    }, 30);
+}
+
+// Lucky Block Oluşturma
+function luckyBlockOlustur() {
+    let lb = document.createElement("img");
+    lb.src = "luckyblock.png";
+    lb.classList.add("luckyBlock");
+    lb.style.left = Math.random() * (oyunAlani.clientWidth - 40) + "px";
+    oyunAlani.appendChild(lb);
+    let lbInterval = setInterval(() => {
+        lb.style.top = (lb.offsetTop + (1 + puan / 100)) + "px"; // Speed increases with score
+        if (carpistiMi(babaanne, lb)) {
+            let efektler = [50, -50, 0, 100, 200, -100, -150, -200, "dokunulmazlik"];
+            let sonuc = efektler[Math.floor(Math.random() * efektler.length)];
+            if (sonuc === "dokunulmazlik") {
+                dokunulmazlik = true;
+                dokunulmazlikYazisi.style.display = "block";
+                setTimeout(() => {
+                    dokunulmazlık = false;
+                    dokunulmazlikYazisi.style.display = "none";
+                }, 10000);
+            } else {
+                puan += sonuc;
                 puanGosterge.innerText = "Puan: " + puan;
             }
-        }, 30);
-    }
-
-    function luckyBlockOlustur() {
-        let lb = document.createElement("img");
-        lb.src = "luckyblock.png";
-        lb.classList.add("luckyBlock");
-        lb.style.left = Math.random() * (oyunAlani.clientWidth - 40) + "px";
-        oyunAlani.appendChild(lb);
-        let lbInterval = setInterval(() => {
-            lb.style.top = (lb.offsetTop + 3) + "px";
-            if (carpistiMi(babaanne, lb)) {
-                let efektler = [50, -50, 0, 100, 200, -100, -150, -200, "dokunulmazlik"];
-                let sonuc = efektler[Math.floor(Math.random() * efektler.length)];
-                if (sonuc === "dokunulmazlik") {
-                    dokunulmazlik = true;
-                    dokunulmazlikYazisi.style.display = "block";
-                    setTimeout(() => {
-                        dokunulmazlik = false;
-                        dokunulmazlikYazisi.style.display = "none";
-                    }, 10000);
-                } else {
-                    puan += sonuc;
-                    puanGosterge.innerText = "Puan: " + puan;
-                }
-                lb.remove();
-            }
-            if (lb.offsetTop > oyunAlani.clientHeight) {
-                lb.remove();
-                clearInterval(lbInterval);
-            }
-        }, 30);
-    }
-
-    function carpistiMi(a, b) {
-        let aRect = a.getBoundingClientRect();
-        let bRect = b.getBoundingClientRect();
-        return !(aRect.top > bRect.bottom || aRect.bottom < bRect.top || aRect.right < bRect.left || aRect.left > bRect.right);
-    }
-
-    function kodGir() {
-        let kod = document.getElementById("kodInput").value;
-        if (kod === "OLUMSUZ100") {
-            dokunulmazlik = true;
-            dokunulmazlikYazisi.style.display = "block";
-            setTimeout(() => {
-                dokunulmazlik = false;
-                dokunulmazlikYazisi.style.display = "none";
-            }, 100000);
+            lb.remove();
+            document.getElementById("bonusSound").play(); // Bonus sound play
         }
-        alert("Kod kullanıldı!");
-    }
-
-    function restartGame() {
-        location.reload();
-    }
-
-    function toggleYouTube() {
-        window.open("https://www.youtube.com", "_self");
-    }
-
-    function showKodEkrani() {
-        document.getElementById("kodEkrani").style.display = "block";
-    }
-
-    function openSettings() {
-        document.getElementById("ayarlarEkrani").style.display = "block";
-    }
-
-    function closeSettings() {
-        document.getElementById("ayarlarEkrani").style.display = "none";
-    }
-
-    function changeWallpaper() {
-        let wallpaper = prompt("Yeni wallpaper URL'sini girin:");
-        if (wallpaper) {
-            document.getElementById("telefonEkrani").style.backgroundImage = "url('" + wallpaper + "')";
+        if (lb.offsetTop > oyunAlani.clientHeight) {
+            lb.remove();
+            clearInterval(lbInterval);
         }
-    }
+    }, 30);
+}
 
-    function changeTheme() {
-        document.body.style.backgroundColor = "#2C3E50";
-        document.body.style.color = "#ECF0F1";
-    }
+// Çarpışma Kontrolü
+function carpistiMi(a, b) {
+    let aRect = a.getBoundingClientRect();
+    let bRect = b.getBoundingClientRect();
+    return !(aRect.top > bRect.bottom || aRect.bottom < bRect.top || aRect.right < bRect.left || aRect.left > bRect.right);
+}
+
+// Telefonu Kapatma
+function kapatTelefon() {
+    document.getElementById("telefonEkrani").style.display = "none";
+}
+
 </script>
 
 </body>
