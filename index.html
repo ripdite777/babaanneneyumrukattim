@@ -8,218 +8,204 @@
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Telefon Ekranı */
+        #telefonEkrani {
+            position: absolute;
+            width: 320px;
+            height: 570px;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none; /* Başlangıçta görünmesin */
+            padding: 10px;
             overflow: hidden;
             touch-action: none;
         }
-        #telefon {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 250px;
-            height: 500px;
-            background-color: #fff;
-            border-radius: 30px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-            display: none;
-            z-index: 10;
-        }
+
+        /* Kilit Ekranı */
         #kilitEkrani {
-            background-color: #333;
-            height: 60px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-            padding: 0 10px;
-        }
-        #kilitEkrani span {
-            font-size: 16px;
-        }
-        #telefonEkrani {
-            display: none;
+            display: block;
+            text-align: center;
+            font-size: 18px;
             padding: 20px;
-            height: 100%;
-            overflow-y: auto;
         }
-        .btn {
+
+        #kilitEkrani p {
+            font-weight: bold;
+        }
+
+        /* LuckyBlock */
+        #luckyBlock {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: url('luckyblock.png') no-repeat center center;
+            background-size: cover;
+            display: none; /* Başlangıçta gizli */
+        }
+
+        /* Oyun ve Ayarlar Menüsü */
+        #menu {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .menuButon {
+            margin: 5px;
+            padding: 10px;
             background-color: #4CAF50;
             color: white;
-            padding: 10px;
-            margin: 5px;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
+            border-radius: 5px;
         }
-        #oyunAlani {
-            width: 100%;
-            height: 500px;
-            background: linear-gradient(to bottom, #888, #555);
-            position: relative;
-            overflow: hidden;
-            border: 5px solid black;
-        }
-        #babaanne {
-            width: 80px;
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            transition: transform 0.1s ease-in-out;
-        }
-        .tir {
-            width: 100px;
-            position: absolute;
-            top: -120px;
-        }
+
         #puan {
             font-size: 24px;
             font-weight: bold;
+        }
+
+        /* Hile Kodu Girişi */
+        #hileKoduGirme {
+            display: none;
             margin-top: 10px;
         }
-        #babaanneFirlama {
-            position: fixed;
-            width: 200px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            transition: transform 0.5s ease-out;
-            display: none;
-        }
+
     </style>
 </head>
 <body>
 
-    <h1>Babaannene Tır Çarpmadan Kaç</h1>
-    <p id="puan">Puan: 0</p>
-    <div id="oyunAlani">
-        <img id="babaanne" src="images__7_-removebg-preview.png" alt="Babaanne">
+    <!-- Kilit Ekranı -->
+    <div id="kilitEkrani">
+        <p id="saat">00:00:00</p>
+        <p id="tarih">Cuma, 7 Şubat 2025</p>
+        <p id="haftaGun">Cuma</p>
+        <button id="kilitAcerButton">Kilidi Aç</button>
     </div>
-    <img id="babaanneFirlama" src="babaanne.png" alt="Fırlayan Babaanne">
 
-    <audio id="carpmaSesi" src="carpma.mp3"></audio>
-    <audio id="tokatSesi" src="tokat.mp3"></audio>
+    <!-- Telefon Ekranı -->
+    <div id="telefonEkrani">
+        <div id="oyunAlani">
+            <p id="puan">Puan: 0</p>
 
-    <div id="telefon">
-        <div id="kilitEkrani">
-            <span id="saat">12:00:00</span>
-            <button id="kilitAcilButton" class="btn">Aç</button>
+            <!-- LuckyBlock -->
+            <div id="luckyBlock"></div>
         </div>
-        <div id="telefonEkrani">
-            <button id="noClipButton" class="btn">NoClip</button>
-            <button id="hizlandirButton" class="btn">Hızlandır</button>
-            <button id="yavaslatButton" class="btn">Yavaşlat</button>
-            <button id="hitboxButton" class="btn">HitBox: 0.1</button>
+
+        <div id="menu">
+            <button class="menuButon" id="oyunAyarlarButton">Oyun Ayarları</button>
+            <button class="menuButon" id="hileKoduButton">Hile Kodları</button>
         </div>
+
+        <!-- Menü Toggle Butonu -->
+        <div id="toggleMenu">≡</div>
+    </div>
+
+    <!-- Hile Kodu Girişi -->
+    <div id="hileKoduGirme">
+        <input type="text" id="hileKoduInput" placeholder="Hile kodunu gir">
+        <button id="hileKoduSubmitButton">Gir</button>
     </div>
 
     <script>
-        let telefon = document.getElementById("telefon");
-        let kilitAcilButton = document.getElementById("kilitAcilButton");
-        let telefonEkrani = document.getElementById("telefonEkrani");
-        let noClipButton = document.getElementById("noClipButton");
-        let hizlandirButton = document.getElementById("hizlandirButton");
-        let yavaslatButton = document.getElementById("yavaslatButton");
-        let hitboxButton = document.getElementById("hitboxButton");
-        let saat = document.getElementById("saat");
+        // Kilit Ekranı Saat ve Tarih Güncellemesi
+        setInterval(() => {
+            const saat = new Date();
+            document.getElementById('saat').innerText = saat.toLocaleTimeString();
+            document.getElementById('tarih').innerText = `${saat.toLocaleDateString()} ${saat.toLocaleString('tr-TR', { weekday: 'long' })}`;
+        }, 1000);
 
+        const kilitEkrani = document.getElementById('kilitEkrani');
+        const kilitAcerButton = document.getElementById('kilitAcerButton');
+        const telefonEkrani = document.getElementById('telefonEkrani');
+        const menu = document.getElementById('menu');
+        const toggleMenu = document.getElementById('toggleMenu');
+        const oyunAyarlarButton = document.getElementById('oyunAyarlarButton');
+        const hileKoduButton = document.getElementById('hileKoduButton');
+        const hileKoduGirme = document.getElementById('hileKoduGirme');
+        const luckyBlock = document.getElementById('luckyBlock');
         let puan = 0;
-        let tirHizi = 5;
-        let hareketEdiyor = false;
-        let durmaSuresi = 0;
-        let dokunmaBaslangicX = 0;
-        let babaanneX = 0;
-        let noClip = false;
-        let hitbox = 0.1;
 
-        // Kilit ekranını açma
-        kilitAcilButton.addEventListener("click", function() {
-            telefon.style.display = "block";
-            telefonEkrani.style.display = "block";
-            document.getElementById("kilitEkrani").style.display = "none";
-            setInterval(updateSaat, 1000);
-        });
+        // LuckyBlock Fonsiyonu
+        function spawnLuckyBlock() {
+            const randomX = Math.floor(Math.random() * (320 - 50)); // Ekranın genişliği - Lucky Block boyutu
+            const randomDropTime = Math.floor(Math.random() * 2000) + 1000; // LuckyBlock'un düşme süresi
+            luckyBlock.style.left = randomX + 'px';
+            luckyBlock.style.display = 'block';
 
-        // Saat güncellemesi
-        function updateSaat() {
-            let currentTime = new Date();
-            let saatStr = currentTime.getHours().toString().padStart(2, "0") + ":" +
-                          currentTime.getMinutes().toString().padStart(2, "0") + ":" +
-                          currentTime.getSeconds().toString().padStart(2, "0");
-            let tarihStr = currentTime.getDate() + "/" + (currentTime.getMonth() + 1) + "/" + currentTime.getFullYear();
-            saat.innerText = `${saatStr} - ${tarihStr}`;
-        }
-
-        // NoClip etkinleştirme
-        noClipButton.addEventListener("click", function() {
-            noClip = !noClip;
-            noClipButton.innerText = noClip ? "NoClip: Aktif" : "NoClip";
-            if (noClip) {
-                alert("NoClip modu aktif! Yüksel ve alçal!");
+            // Lucky Block rastgele içerik belirleme
+            const randomType = Math.floor(Math.random() * 4);
+            if (randomType === 0) {
+                // Puan Verme
+                const randomPuan = [100, -100, 50, -50][Math.floor(Math.random() * 4)];
+                puan += randomPuan;
+                alert(`LuckyBlock'tan ${randomPuan} puan kazandınız!`);
+            } else if (randomType === 1) {
+                // Dokunulmazlık
+                const randomTime = [5, 10][Math.floor(Math.random() * 2)];
+                alert(`${randomTime} saniye dokunulmazlık kazandınız!`);
             }
-        });
-
-        // Hızlandırma ve Yavaşlatma
-        hizlandirButton.addEventListener("click", function() {
-            tirHizi += 2;
-            alert("Hızlandırma aktif. Tır hızı arttı!");
-        });
-
-        yavaslatButton.addEventListener("click", function() {
-            if (tirHizi > 2) {
-                tirHizi -= 2;
-                alert("Yavaşlatma aktif. Tır hızı azaldı.");
-            }
-        });
-
-        // Hitbox Ayarı
-        hitboxButton.addEventListener("click", function() {
-            hitbox = (hitbox < 1) ? (hitbox + 0.1) : 1;
-            hitboxButton.innerText = "HitBox: " + hitbox;
-        });
-
-        // Mobil dokunmatik kontrol
-        document.getElementById("oyunAlani").addEventListener("touchstart", (e) => {
-            let dokunma = e.touches[0];
-            dokunmaBaslangicX = dokunma.clientX - document.getElementById("babaanne").offsetLeft;
-            hareketEdiyor = true;
-        });
-
-        document.getElementById("oyunAlani").addEventListener("touchmove", (e) => {
-            let dokunma = e.touches[0];
-            let yeniX = dokunma.clientX - dokunmaBaslangicX;
-            if (noClip) {
-                // Yukarı ve aşağıda hareket etme
-                let yeniY = dokunma.clientY;
-                document.getElementById("babaanne").style.left = yeniX + "px";
-                document.getElementById("babaanne").style.top = yeniY + "px";
-            } else {
-                yeniX = Math.max(0, Math.min(document.getElementById("oyunAlani").clientWidth - document.getElementById("babaanne").clientWidth, yeniX));
-                document.getElementById("babaanne").style.left = yeniX + "px";
-            }
-            hareketEdiyor = true;
-        });
-
-        // Tır oluşturma ve çarpışma kontrolü
-        function tirOlustur() {
-            let tir = document.createElement("img");
-            tir.src = "tir.png";
-            tir.classList.add("tir");
-            tir.style.left = Math.random() * (document.getElementById("oyunAlani").clientWidth - 100) + "px";
-            document.getElementById("oyunAlani").appendChild(tir);
             
-            let tirInterval = setInterval(() => {
-                tir.style.top = (tir.offsetTop + tirHizi) + "px";
-                if (tir.offsetTop > document.getElementById("oyunAlani").clientHeight) {
-                    tir.remove();
-                    clearInterval(tirInterval);
-                    puan += 10;
-                    document.getElementById("puan").innerText = "Puan: " + puan;
+            // Düşme işlemi
+            let positionY = 0;
+            const dropInterval = setInterval(() => {
+                if (positionY < 500) {
+                    positionY += 5; // Düşme hızı
+                    luckyBlock.style.top = positionY + 'px';
+                } else {
+                    clearInterval(dropInterval); // LuckyBlock ekranın altına ulaştığında durdur
+                    luckyBlock.style.display = 'none'; // Ekranı temizle
                 }
-            }, 30);
+            }, 10);
         }
 
-        setInterval(tirOlustur, 1500);
+        // LuckyBlock 12 saniyede bir spawn olsun
+        setInterval(spawnLuckyBlock, 12000); // Her 12 saniyede bir Lucky Block düşecek
+
+        // Kilidi Aç butonuna tıklayınca telefon açılır
+        kilitAcerButton.addEventListener("click", () => {
+            kilitEkrani.style.display = "none";
+            telefonEkrani.style.display = "block";
+        });
+
+        // Telefonun menü kısmı toggle
+        toggleMenu.addEventListener("click", () => {
+            if (menu.style.display === "none") {
+                menu.style.display = "block";
+            } else {
+                menu.style.display = "none";
+            }
+        });
+
+        // Oyun Ayarları Butonuna Tıklama
+        oyunAyarlarButton.addEventListener("click", () => {
+            alert("Oyun ayarları açılacak.");
+        });
+
+        // Hile Kodu Butonuna Tıklama
+        hileKoduButton.addEventListener("click", () => {
+            hileKoduGirme.style.display = "block";
+        });
+
+        // Hile Kodu Girme
+        const hileKoduInput = document.getElementById('hileKoduInput');
+        const hileKoduSubmitButton = document.getElementById('hileKoduSubmitButton');
+        hileKoduSubmitButton.addEventListener("click", () => {
+            const kod = hileKoduInput.value.toLowerCase();
+            if (kod === 'noclip') {
+                alert("Noclip aktif oldu!");
+                // Noclip işlevselliği burada aktif olacak.
+            }
+            hileKoduGirme.style.display = "none";
+        });
     </script>
 
 </body>
